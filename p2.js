@@ -4,6 +4,7 @@
    public.user_data protected by row level security. Signup requires the Arabic consent. */
 (function(){
   if(!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY||!window.supabase)return;
+  window.__p2v='gate5';
   var LSK='abushuaib_v1', PK='abushuaib_profile_v1';
   var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
   var userId=null, uname=null, syncT=null, pullT=null, pendingU='', loginHandled=false;
@@ -126,6 +127,7 @@
       if(u.length<2){t1('اسم المستخدم قصير');return}
       if(p.length<6){t1('كلمة السر لازم ٦ حروف أو أكتر');return}
       pendingU=u;
+      try{localStorage.setItem('p2_uname',u)}catch(e){}
       var email=toEmail(u);
       if(isNew){
         if(!$('p2consent').checked){t1('لازم توافق على تخزين البيانات الأول');return}
