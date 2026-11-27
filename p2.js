@@ -199,11 +199,24 @@
         var base={days:{},weights:{},settings:{kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:'2026-10-07',theme:'auto',ai:true},favs:[],inbody:{'2026-10-07':{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}},review:null};
         localStorage.setItem(LSK,JSON.stringify(base));
         localStorage.setItem(PK,JSON.stringify({name:'أحمد',w0:105.9,goal:'cut',daysW:4,created:'2026-10-07'}));
+        try{sessionStorage.setItem('p2gen','1')}catch(e){}
         t1('اترجعت بياناتك الأصلية');
         setTimeout(function(){location.reload()},700);
       });
     }
   }
+
+  /* after a baseline restore, build the personal program automatically so the train tab is ready without an extra tap */
+  try{
+    if(sessionStorage.getItem('p2gen')==='1'){
+      sessionStorage.removeItem('p2gen');
+      setTimeout(function(){
+        var tb=document.querySelector('button.tab[data-v="train"]');
+        if(tb)tb.click();
+        setTimeout(function(){var mk=$('p1make');if(mk)mk.click()},450);
+      },500);
+    }
+  }catch(e){}
 
   /* persist username for display */
   var _signUp=sb.auth.signUp.bind(sb.auth), _signIn=sb.auth.signInWithPassword.bind(sb.auth);
