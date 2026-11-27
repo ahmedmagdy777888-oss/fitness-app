@@ -655,7 +655,7 @@ async function putWeight(k,kg){
   db.doc('meta/settings').onSnapshot(d=>{if(d.exists){const v=d.data()||{};if(v.settings)SET=Object.assign({},DEF,v.settings);if(v.favs)S.favs=v.favs;if(v.review!==undefined)S.review=v.review;applySettings();saveLocal();renderAll(true)}},()=>{});
   db.collection('inbody').onSnapshot(snap=>{const m={};snap.docs.forEach(d=>m[d.id]=clone(d.data()));S.inbodyDb=m;saveLocal();renderAll(true)},()=>{});
 })();
-let setT;function putSettings(){saveLocal();if(!S.db)return;clearTimeout(setT);setT=setTimeout(()=>{S.db.doc('meta/settings').set({settings:SET,favs:S.favs,review:S.review}).catch(e=>toast('الإعدادات ما اتحفظتش عند Claude، بس متسجلة على جهازك.'))},400)}
+let setT;function putSettings(){saveLocal();if(!S.db)return;clearTimeout(setT);setT=setTimeout(()=>{S.db.doc('meta/settings').set({settings:SET,favs:S.favs,review:S.review}).catch(e=>toast('الإعدادات ما اتحفظتش على السحابة، بس متسجلة على جهازك.'))},400)}
 function putInBody(entry){S.inbodyDb[entry.date]=entry;saveLocal();renderAll();if(S.db){S.db.doc('inbody/'+entry.date).set(entry).catch(e=>toast('الفحص متسجل على جهازك بس. اتأكد من النت.'))}}
 
 /* ---------- helpers ---------- */
@@ -978,7 +978,7 @@ function openSettings(){
   </div>
   <input id="impFile" type="file" accept="application/json,.json" hidden>
   ${deferredPrompt?'<button class="btn btn-acc btn-wide" id="installBtn" style="margin-top:12px">ثبّت التطبيق على التليفون</button>':'<p class="note" style="margin-top:12px">لتثبيته كتطبيق: من قائمة المتصفح اختار «إضافة إلى الشاشة الرئيسية».</p>'}
-  <p class="note">بياناتك بتتحفظ على جهازك وعلى حسابك في Claude زي ما هي. النسخة الاحتياطية ملف تقدر تحتفظ بيه وترجّعه في أي وقت.</p>
+  <p class="note">بياناتك بتتحفظ على جهازك وبتتزامن مع حسابك على السحابة زي ما هي. النسخة الاحتياطية ملف تقدر تحتفظ بيه وترجّعه في أي وقت.</p>
   <button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:10px">تمام</button>`;
   $('#sheet').hidden=false;
 }
@@ -1000,7 +1000,7 @@ async function importJson(file){
     if(!confirm('الاستيراد هيستبدل البيانات الحالية بالنسخة دي. متأكد؟'))return;
     S.days=j.days||{};S.weights=j.weights||{};if(j.settings)SET=Object.assign({},DEF,j.settings);S.favs=j.favs||[];S.inbodyDb={};(j.inbody||[]).forEach(e=>{if(e&&e.date)S.inbodyDb[e.date]=e});S.review=j.review||null;
     applySettings();saveLocal();
-    if(S.db){try{for(const k in S.days)await S.db.doc('days/'+k).set(clone(S.days[k]));for(const k in S.weights)await S.db.doc('weights/'+k).set(clone(S.weights[k]));for(const k in S.inbodyDb)await S.db.doc('inbody/'+k).set(clone(S.inbodyDb[k]));await S.db.doc('meta/settings').set({settings:SET,favs:S.favs,review:S.review})}catch(e){toast('اتحفظ على جهازك، بس مزامنة Claude وقفت عند خطأ')}}
+    if(S.db){try{for(const k in S.days)await S.db.doc('days/'+k).set(clone(S.days[k]));for(const k in S.weights)await S.db.doc('weights/'+k).set(clone(S.weights[k]));for(const k in S.inbodyDb)await S.db.doc('inbody/'+k).set(clone(S.inbodyDb[k]));await S.db.doc('meta/settings').set({settings:SET,favs:S.favs,review:S.review})}catch(e){toast('اتحفظ على جهازك، بس المزامنة مع السحابة وقفت عند خطأ')}}
     renderAll();$('#sheet').hidden=true;toast('رجّعنا النسخة');
   }catch(e){toast('ما قدرناش نقرا الملف')}
 }
