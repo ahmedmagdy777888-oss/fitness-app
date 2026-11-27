@@ -68,10 +68,12 @@
         return;
       }
       if(!localHasData()){applyCloud(row);return}
-      /* both sides have data: let the user choose */
+      /* both sides have data: let the user choose, naming both profiles */
       var s=$('sheetIn');if(!s)return;
+      var cn=row.profile&&row.profile.name?String(row.profile.name):'';
+      var ln='';try{ln=(JSON.parse(localStorage.getItem(PK)||'{}')||{}).name||''}catch(e){}
       s.innerHTML='<h2>فيه بيانات في السحابة</h2>'
-        +'<p class="note">حسابك فيه بيانات محفوظة من جهاز تاني، والجهاز ده فيه بيانات كمان. تكمل بأنهي؟</p>'
+        +'<p class="note">السحابة فيها بيانات'+(cn?' <b>'+esc(cn)+'</b>':'')+' محفوظة من جهاز تاني، والجهاز ده فيه بيانات'+(ln?' <b>'+esc(ln)+'</b>':'')+' كمان. لو الاسم اللي في السحابة مش اسمك، يبقى ده حساب حد تاني — دوس لأ واعمل حساب جديد باسم مختلف. تكمل بأنهي؟</p>'
         +'<button class="btn btn-acc btn-wide" id="p2usecloud" style="margin-top:14px">استخدم بيانات السحابة (تتبدل بيانات الجهاز ده)</button>'
         +'<button class="btn btn-wide" id="p2uselocal" style="margin-top:8px">اكمل ببيانات الجهاز ده (هترفع فوق اللي في السحابة)</button>'
         +'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>';
