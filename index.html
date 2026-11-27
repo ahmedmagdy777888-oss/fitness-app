@@ -147,7 +147,7 @@ h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;l
 .chart .val{fill:var(--fg);font-weight:600}
 .big-n{font-family:var(--display);font-size:30px;font-weight:600}
 
-/* figure: أحمد بنفسه، على لوح داكن بهوية الأسود والأصفر */
+/* figure: شخصية المتدرّب، على لوح داكن بهوية الأسود والأصفر */
 .ex-anim,.sheet .big{background:radial-gradient(circle at 50% 38%,#3C5558,#1A2A2D)}
 .fig-p{stroke:#6F8F8C}
 .fig-w{fill:#0E1517;stroke:#6DBBB3;stroke-width:2}
@@ -232,9 +232,9 @@ h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;l
     <div id="missedWrap"></div>
     <div class="grid2">
       <div class="stat"><small>السعرات النهاردة</small><b class="num" id="hKcal">0</b><small id="hKcalT"></small><div class="bar" id="hKcalB"><i></i></div></div>
-      <div class="stat"><small>البروتين النهاردة</small><b class="num" id="hProt">0</b><small id="hProtT">من 165 جم</small><div class="bar" id="hProtB"><i></i></div></div>
+      <div class="stat"><small>البروتين النهاردة</small><b class="num" id="hProt">0</b><small id="hProtT">من 130 جم</small><div class="bar" id="hProtB"><i></i></div></div>
       <div class="stat"><small>تمرين الأسبوع</small><b class="num" id="hWeek">0/4</b><small>أيام مكتملة</small></div>
-      <div class="stat"><small>الوزن</small><b class="num" id="hW">105.9</b><small id="hWd">بداية الرحلة</small></div>
+      <div class="stat"><small>الوزن</small><b class="num" id="hW">--</b><small id="hWd">بداية الرحلة</small></div>
       <div class="stat"><small>سلسلة الالتزام</small><b class="num" id="hStreak">0</b><small>يوم متواصل</small></div>
       <div class="stat"><small>المية النهاردة</small><b class="num" id="hWater">0</b><small id="hWaterT">من 8 أكواب</small><div class="bar" id="hWaterB"><i></i></div></div>
     </div>
@@ -303,10 +303,10 @@ h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;l
 
   <!-- PROGRESS -->
   <section id="v-prog" hidden>
-    <div class="sec-h"><h2>التقدم</h2><span class="lbl" id="progGoal">الهدف 87.8 كجم</span></div>
+    <div class="sec-h"><h2>التقدم</h2><span class="lbl" id="progGoal">الهدف</span></div>
     <div class="card">
       <div class="spread"><span class="lbl">نزلت لحد دلوقتي</span><span class="lbl">باقي</span></div>
-      <div class="spread"><b class="num big-n" id="pLost">0</b><b class="num big-n" style="color:var(--muted)" id="pLeft">18.1</b></div>
+      <div class="spread"><b class="num big-n" id="pLost">0</b><b class="num big-n" style="color:var(--muted)" id="pLeft">0</b></div>
       <div class="bar"><i id="pBar" style="width:0"></i></div>
       <svg class="chart" id="wChart" viewBox="0 0 340 170" role="img" aria-label="رسم الوزن"></svg>
     </div>
@@ -353,7 +353,7 @@ const fmt=n=>Math.round(n).toLocaleString('en-US');
 document.documentElement.dir='rtl';document.documentElement.lang='ar';
 const DAYN=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 const MON=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-const DEF={kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:'2026-10-07',theme:'auto',ai:true};
+const DEF={kcal:2000,prot:130,steps:7000,water:8,goal:75,startKg:85,startDate:'2026-01-01',theme:'auto',ai:true};
 let SET=Object.assign({},DEF);
 const T={kcal:DEF.kcal,prot:DEF.prot,steps:DEF.steps};
 const BASE={date:DEF.startDate,kg:DEF.startKg,goal:DEF.goal};
@@ -422,7 +422,7 @@ const ANIM={
 };
 const svgNS='http://www.w3.org/2000/svg';
 const live=new Set();
-/* أحمد: جسم ممتلئ، لحية كاملة، شعر أسود قصير مجعد، سماعة أوفر إير، تيشيرت بيج وشورت رمادي */
+/* شخصية التمارين الكرتونية */
 const ROLE={
  'kn-ft':[12,'c-skin',0],'kf-ff':[12,'c-skin',0],'kb-fb':[12,'c-skin',0],'kl-fl':[12,'c-skin',0],'kr-fr':[12,'c-skin',0],'kn-an':[12,'c-skin',0],'an-to':[9,'c-shoe',0.5],
  'hip-kn':[17,'c-short',1],'hip-kf':[17,'c-short',1],'hip-kb':[17,'c-short',1],'pl-kl':[16,'c-short',1],'pr-kr':[16,'c-short',1],'pl-pr':[18,'c-short',1.5],
@@ -620,9 +620,9 @@ FOOD['البيت']=ord([
 FOOD['مشروبات']=[
   ['شاي أو قهوة من غير سكر',5,0,'g'],['بيبسي دايت',0,0,'g'],['بيبسي زيرو',0,0,'g',3.5],['سفن آب دايت',0,0,'g',3.5],
   ['لبن (كوب)',150,8,'y'],['عصير (كوب)',120,1,'r'],['بيبسي عادي (علبة)',150,0,'r',3.5]];
-const MORN=['صباح الفل يا أحمد','صباحو يا وحش','صباح الورد يا أبو شعيب','صباح الجمال يا كبير','يا صباح الهِمّة يا أحمد'];
-const NOON=['إزيك يا أحمد؟ عامل إيه النهاردة','أهلاً يا كبير','يا هلا يا أبو شعيب','منوّر يا أحمد'];
-const EVE=['مساء الفل يا أحمد','مسا الخير يا وحش','مساء الجمال يا أبو شعيب','منوّر يا كبير، يومك كان عامل إيه؟','مساء الورد يا أحمد'];
+const MORN=['صباح الفل يا بطل','صباحو يا وحش','صباح الورد يا كبير','صباح الجمال يا غالي','يا صباح الهِمّة يا بطل'];
+const NOON=['إزيك يا بطل؟ عامل إيه النهاردة','أهلاً يا كبير','يا هلا يا غالي','منوّر يا بطل'];
+const EVE=['مساء الفل يا بطل','مسا الخير يا وحش','مساء الجمال يا غالي','منوّر يا كبير، يومك كان عامل إيه؟','مساء الورد يا بطل'];
 const QUOTES=['«المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف، وفي كلٍّ خير» رواه مسلم','الـ 1300 ريال دول هنطلّعهم بالمليم، ما تقلقش','مش لازم تبقى مثالي يا باشا، المهم ما تفوّتش.','الكرش ده ليه آخر، وآخره قريب إن شاء الله','البروتين ده صاحبك، خليه جنبك طول اليوم','خطوة خطوة، والميزان هيضحكلك قريب.','اللي يصحى الفجر ويروح الجيم، ده بطل ومحدش يقدر عليه.','شوية مشي بعد التمرين وهتشكرني بعدين'];
 
 /* ---------- store ---------- */
@@ -818,7 +818,7 @@ async function guessText(){
   if(!sample){out.textContent='التقدير مش متاح دلوقتي.';return}
   out.textContent='Claude بيحسب…';
   try{
-    const r=await sample.json('وصف وجبة بالعامية لشخص بيخسّ وزن (هدفه 2350 سعرة و165 جم بروتين في اليوم): «'+t.replace(/[«»]/g,'')+'». قدّر مجموع السعرات والبروتين لكل اللي اتذكر بالكميات المذكورة (ولو الكمية مش مذكورة افترض حصة عادية). رد بـ JSON فقط بالشكل: {"name":"اسم مختصر للوجبة بالعامية المصرية","kcal":رقم,"protein":رقم,"tip":"نصيحة قصيرة جملة واحدة بالعامية المصرية"}. لو الوصف مش أكل خلي kcal صفر.',{modelTier:'default'});
+    const r=await sample.json('وصف وجبة بالعامية لشخص بيخسّ وزن (هدفه '+T.kcal+' سعرة و'+T.prot+' جم بروتين في اليوم): «'+t.replace(/[«»]/g,'')+'». قدّر مجموع السعرات والبروتين لكل اللي اتذكر بالكميات المذكورة (ولو الكمية مش مذكورة افترض حصة عادية). رد بـ JSON فقط بالشكل: {"name":"اسم مختصر للوجبة بالعامية المصرية","kcal":رقم,"protein":رقم,"tip":"نصيحة قصيرة جملة واحدة بالعامية المصرية"}. لو الوصف مش أكل خلي kcal صفر.',{modelTier:'default'});
     if(!r||!+r.kcal){out.textContent='ما فهمتش الأكل. جرّب توضّح أكتر (مثلاً: «طبقين رز وفرخة مشوية»).';return}
     showGuess(r,'من الوصف');
   }catch(e){out.textContent=e?.code==='not_granted'?'لازم توافق إن الصفحة تسأل Claude.':'حصلت مشكلة في التحليل. جرّب تاني بعد شوية.'}
@@ -835,7 +835,7 @@ $('#mealTxt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefaul
 $('#photo').addEventListener('change',async ev=>{
   const f=ev.target.files?.[0];if(!f||!sample)return;const out=$('#photoRes');out.textContent='Claude بيبص على الأكل…';
   try{
-    const r=await sample.json('دي صورة وجبة لشخص بيخسّ وزن (هدفه 2350 سعرة و165 جم بروتين في اليوم). قدّر محتواها. رد بـ JSON فقط بالشكل: {"name":"اسم مختصر للوجبة بالعامية المصرية","kcal":رقم,"protein":رقم,"tip":"نصيحة قصيرة جملة واحدة بالعامية المصرية"}. لو الصورة مش أكل خلي kcal صفر.',{images:[f],modelTier:'default'});
+    const r=await sample.json('دي صورة وجبة لشخص بيخسّ وزن (هدفه '+T.kcal+' سعرة و'+T.prot+' جم بروتين في اليوم). قدّر محتواها. رد بـ JSON فقط بالشكل: {"name":"اسم مختصر للوجبة بالعامية المصرية","kcal":رقم,"protein":رقم,"tip":"نصيحة قصيرة جملة واحدة بالعامية المصرية"}. لو الصورة مش أكل خلي kcal صفر.',{images:[f],modelTier:'default'});
     if(!r||!+r.kcal){out.textContent='ما قدرتش أتعرف على أكل في الصورة. جرّب صورة أوضح.';return}
     showGuess(r,'من الصورة');
   }catch(e){out.textContent=e?.code==='not_granted'?'لازم توافق إن الصفحة تبعت الصورة لـ Claude.':'حصلت مشكلة في التحليل. جرّب تاني بعد شوية.'}
@@ -866,7 +866,7 @@ function renderProg(){
 }
 
 /* ---------- InBody ---------- */
-const INBODY0=[{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}];
+const INBODY0=[];
 function inbodyAll(){const m=new Map((window.P1&&P1.hideSeed?[]:INBODY0).map(e=>[e.date,e]));Object.values(S.inbodyDb||{}).forEach(e=>{if(e&&e.date)m.set(e.date,e)});return [...m.values()].sort((a,b)=>a.date<b.date?-1:1)}
 function inbodyDue(){const all=inbodyAll();const last=all[all.length-1];if(!last)return false;return Math.floor((new Date(todayK)-new Date(last.date))/864e5)>=42}
 function ibDiff(cur,prev,goodDown){if(!prev)return'';const d=Math.round((cur-prev)*100)/100;if(!d)return'<span class="lbl">ثابت</span>';const good=goodDown?d<0:d>0;return`<span class="${good?'diff-down':'diff-up'}">${d>0?'↑':'↓'} ${Math.abs(d)}</span>`}
@@ -892,11 +892,11 @@ function openInbodySheet(){
   const s=$('#sheetIn');
   s.innerHTML=`<h2>فحص InBody جديد</h2><p class="note">اكتب الأرقام اللي في التقرير. فاضي مش مشكلة.</p>
   <div class="srow"><span class="lbl">التاريخ</span><input class="inp num" id="ibDate" type="date" value="${todayK}"></div>
-  <div class="srow"><span class="lbl">الدهون (كجم)</span><input class="inp num" id="ibFat" type="number" step="0.1" inputmode="decimal" placeholder="31.2"></div>
-  <div class="srow"><span class="lbl">نسبة الدهون (%)</span><input class="inp num" id="ibFatP" type="number" step="0.1" inputmode="decimal" placeholder="29.5"></div>
-  <div class="srow"><span class="lbl">العضلات (كجم)</span><input class="inp num" id="ibMus" type="number" step="0.1" inputmode="decimal" placeholder="42.7"></div>
-  <div class="srow"><span class="lbl">الدهون الحشوية</span><input class="inp num" id="ibVis" type="number" inputmode="numeric" placeholder="13"></div>
-  <div class="srow"><span class="lbl">الخصر للورك</span><input class="inp num" id="ibWhr" type="number" step="0.01" inputmode="decimal" placeholder="0.97"></div>
+  <div class="srow"><span class="lbl">الدهون (كجم)</span><input class="inp num" id="ibFat" type="number" step="0.1" inputmode="decimal" placeholder="25"></div>
+  <div class="srow"><span class="lbl">نسبة الدهون (%)</span><input class="inp num" id="ibFatP" type="number" step="0.1" inputmode="decimal" placeholder="25"></div>
+  <div class="srow"><span class="lbl">العضلات (كجم)</span><input class="inp num" id="ibMus" type="number" step="0.1" inputmode="decimal" placeholder="40"></div>
+  <div class="srow"><span class="lbl">الدهون الحشوية</span><input class="inp num" id="ibVis" type="number" inputmode="numeric" placeholder="8"></div>
+  <div class="srow"><span class="lbl">الخصر للورك</span><input class="inp num" id="ibWhr" type="number" step="0.01" inputmode="decimal" placeholder="0.90"></div>
   <button class="btn btn-acc btn-wide" id="inbSave" style="margin-top:16px">حفظ الفحص</button>
   <button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>`;
   $('#sheet').hidden=false;
@@ -947,6 +947,9 @@ function ignoreProposal(i){const r=S.review;if(!r)return;r.ignored[i]=true;putSe
 /* ---------- settings, theme, export/import, install ---------- */
 let deferredPrompt=null;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
+
+function renderStepsLink(){const box=$('#stepsLink');if(!box)return;const url=window.SUPABASE_URL?window.SUPABASE_URL+'/functions/v1/steps-sync':'';if(!SET.stepsToken){box.innerHTML=`<button class="btn btn-acc btn-wide" id="stepsNew" style="margin-top:8px">أنشئ مفتاح الربط</button>`;return}box.innerHTML=`<div class="srow" style="flex-direction:column;align-items:stretch;gap:6px"><small class="lbl">مفتاح الربط (تحطه في الاختصار مرة واحدة)</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${SET.stepsToken}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyTok">انسخ</button></div><small class="lbl">رابط الإرسال</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${url}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyUrl">انسخ</button></div><small class="lbl">كود الوصول (ثابت، للترويسة Authorization)</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${window.SUPABASE_ANON_KEY||''}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyKey">انسخ</button></div><button class="btn btn-ghost btn-wide" id="stepsNew" style="margin-top:4px">مفتاح جديد (القديم يبطل)</button></div>`}
+window.P2applySteps=rows=>{let ch=false;(rows||[]).forEach(r=>{const k=r.day,st=+r.steps||0;if(!k||!st)return;const d=day(k);if(st>+(d.steps||0)){d.steps=st;putDay(k,d);ch=true}});if(ch)renderAll(true)};
 function cycleTheme(){SET.theme=SET.theme==='dark'?'light':'dark';applySettings();putSettings();toast(SET.theme==='dark'?'الوضع الغامق':'الوضع الفاتح')}
 function openSettings(){
   const s=$('#sheetIn');
@@ -965,6 +968,9 @@ function openSettings(){
   <h3 style="font-size:17px;margin-top:18px">المساعد الذكي (Claude)</h3>
   <p class="note">تقدير الوجبات من الصورة أو الوصف، ومراجعة الأسبوع. لو قفلته كل حاجة تانية بتشتغل عادي.</p>
   <div class="seg" style="margin-top:8px"><button data-ai="1" aria-pressed="${SET.ai}">شغال</button><button data-ai="0" aria-pressed="${!SET.ai}">متوقف</button></div>
+  <h3 style="font-size:17px;margin-top:18px">الخطوات من صحة آبل (تلقائي)</h3>
+  <p class="note">تليفونك يبعت عدد خطواتك لوحده مرة في اليوم من تطبيق صحة آبل، من غير ما تكتب حاجة.</p>
+  <div id="stepsLink"></div>
   <h3 style="font-size:17px;margin-top:18px">نسخة احتياطية</h3>
   <div class="row" style="margin-top:8px;flex-wrap:nowrap">
     <button class="btn btn-ghost" id="expBtn" style="flex:1">صدّر JSON</button>
@@ -1017,7 +1023,7 @@ document.addEventListener('click',ev=>{
   if(b.dataset.plan){plan=b.dataset.plan;return renderTrain()}
   if(b.dataset.how)return openHow(b.dataset.how);
   if(b.classList.contains('chk')){const id=b.dataset.ex,i=+b.dataset.i;const d=day(todayK);const cur=d.sets?.[id]?.[i]?.d;const nd=setField(id,i,'d',!cur);if(!cur&&!EX[id].cardio)startTimer(EX[id].rest);renderTrain();return}
-  if(b.id==='finish'){const d=day(todayK);d.done=true;d.plan=plan;d.finishedAt=new Date().toISOString();putDay(todayK,d);toast('عااش يا بطل! النهاردة اتقفل');renderAll();return}
+  if(b.id==='finish'){const d=day(todayK);d.done=true;d.plan=plan;d.finishedAt=new Date().toISOString();putDay(todayK,d);if(SCHED[new Date().getDay()]!==plan){for(let i=1;i<=2;i++){const dd=new Date();dd.setDate(dd.getDate()-i);const dk=dkey(dd);if(SCHED[dd.getDay()]===plan&&!S.days[dk]?.done){const md=day(dk);md.done=true;md.plan=plan;md.madeUp=todayK;putDay(dk,md);break}}}toast('عااش يا بطل! النهاردة اتقفل');renderAll();return}
   if(b.dataset.cat){cat=b.dataset.cat;return renderFood()}
   if(b.dataset.add!==undefined){const f=FOOD[cat][+b.dataset.add];return addMeal(f[0],f[1],f[2])}
   if(b.dataset.rm){const d=day(todayK);d.meals=(d.meals||[]).filter(m=>m.id!==b.dataset.rm);putDay(todayK,d);return renderAll()}
@@ -1025,7 +1031,9 @@ document.addEventListener('click',ev=>{
   if(b.id==='addGuess'&&photoGuess){const p=portion;addMeal(photoGuess.name+(p<1?' ('+PORT.find(x=>x[0]===p)[1]+')':''),Math.round(photoGuess.kcal*p),Math.round(photoGuess.protein*p*10)/10);photoGuess=null;portion=1;$('#mealTxt').value='';$('#photoRes').textContent='';return}
   if(b.id==='stepsSave'){const v=+$('#steps').value;if(!(v>=0)){toast('اكتب رقم صحيح');return}const d=day(todayK);d.steps=v;putDay(todayK,d);renderAll();toast(v>=T.steps?'جامد! وصلت للهدف':'تمام، اتسجّلت الخطوات');return}
   if(b.id==='wSave'){const v=+$('#wIn').value;if(!(v>40&&v<250)){toast('اكتب وزنك بالكيلو، مثلاً 104.6');return}putWeight(todayK,v);$('#wIn').value='';toast('اتسجّل وزنك: '+v+' كجم');return}
-  if(b.id==='settingsBtn')return openSettings();
+  if(b.id==='settingsBtn'){openSettings();renderStepsLink();return}
+  if(b.id==='stepsNew'){SET.stepsToken=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));putSettings();renderStepsLink();toast('اتعمل مفتاح الربط');return}
+  if(b.id==='stepsCopyTok'||b.id==='stepsCopyUrl'||b.id==='stepsCopyKey'){const t=b.id==='stepsCopyTok'?(SET.stepsToken||''):(b.id==='stepsCopyKey'?(window.SUPABASE_ANON_KEY||''):(window.SUPABASE_URL+'/functions/v1/steps-sync'));if(navigator.clipboard&&t)navigator.clipboard.writeText(t).then(()=>toast('اتنسخ')).catch(()=>toast('اعمل تحديد وانسخ يدوي'));return}
   if(b.id==='themeBtn')return cycleTheme();
   if(b.dataset.mk){plan=b.dataset.mk;return show('train')}
   if(b.id==='wPlus'||b.id==='wMinus'){const d=day(todayK);d.water=Math.max(0,Math.min(30,+(d.water||0)+(b.id==='wPlus'?1:-1)));putDay(todayK,d);renderAll();if(d.water===SET.water&&b.id==='wPlus')toast('برافو! خلّصت مويتك النهاردة');return}
@@ -1227,7 +1235,7 @@ show('home');
   function patchGreet(){
     var g=document.getElementById('greet');
     if(!prof){if(g&&g.textContent!=='أهلاً بيك')g.textContent='أهلاً بيك';return}
-    if(g){var t=g.textContent;var nt=t.replace(/أحمد/g,prof.name).replace(/أبو شعيب/g,prof.name);if(nt!==t)g.textContent=nt;}
+    if(g){var t=g.textContent;var nt=t.replace(/يا (بطل|وحش|كبير|غالي)/g,'يا '+prof.name);if(nt!==t)g.textContent=nt;}
     var av=document.getElementById('avatarImg');if(av)av.alt=prof.name;
   }
   patchGreet();
@@ -1258,9 +1266,9 @@ show('home');
         var j=JSON.parse(localStorage.getItem(LSK)||'null')||{};
         j.days=j.days||{};j.weights=j.weights||{};j.favs=j.favs||[];j.inbody=j.inbody||{};j.review=j.review||null;
         if(w0)j.weights[today]={kg:w0};
-        var kcal=w0?Math.round((g==='cut'?w0*22:g==='build'?w0*30:w0*26)/50)*50:2350;
-        var prot=w0?Math.round(w0*(g==='build'?2:1.8)):165;
-        j.settings=Object.assign({kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:today,theme:'auto',ai:true},j.settings||{});
+        var kcal=w0?Math.round((g==='cut'?w0*22:g==='build'?w0*30:w0*26)/50)*50:2000;
+        var prot=w0?Math.round(w0*(g==='build'?2:1.8)):130;
+        j.settings=Object.assign({kcal:2000,prot:130,steps:7000,water:8,goal:75,startKg:85,startDate:today,theme:'auto',ai:true},j.settings||{});
         j.settings.startDate=today;j.settings.kcal=kcal;j.settings.prot=prot;
         if(w0){j.settings.startKg=w0;j.settings.goal=g==='cut'?Math.round(w0*0.9*10)/10:w0}
         localStorage.setItem(LSK,JSON.stringify(j));
