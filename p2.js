@@ -6,7 +6,7 @@
   if(!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY||!window.supabase)return;
   var LSK='abushuaib_v1', PK='abushuaib_profile_v1';
   var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
-  var userId=null, uname=null, syncT=null, pullT=null;
+  var userId=null, uname=null, syncT=null, pullT=null, pendingU='';
 
   function $(id){return document.getElementById(id)}
   function t1(m){var e=$('toast');if(!e)return;e.textContent=m;e.hidden=false;setTimeout(function(){e.hidden=true},2800)}
@@ -57,13 +57,15 @@
       var row=r.data;
       if(r.error){t1('مشكلة في الشبكة. حاول تاني.');return}
       if(!row){
-        if(localHasData()){push();t1('اترفعت بيانات الجهاز ده على حسابك')}
+        if(localHasData()){push();t1('اترفعت بيانات الجهاز ده على حسابك');ensureProf(false)}
+        else{ensureProf(true);push()}
         renderAuthCard();
         return;
       }
       var cloudEmpty=(!row.profile||!Object.keys(row.profile).length)&&(!row.app_data||!Object.keys(row.app_data).length);
       if(cloudEmpty){
-        if(localHasData()){push();t1('اترفعت بيانات الجهاز ده على حسابك')}
+        if(localHasData()){push();t1('اترفعت بيانات الجهاز ده على حسابك');ensureProf(false)}
+        else{ensureProf(true);push()}
         renderAuthCard();
         return;
       }
@@ -83,23 +85,47 @@
     });
   }
 
-  function openAuthSheet(mode){
-    var s=$('sheetIn');if(!s)return;
-    var isNew=mode==='new';
-    s.innerHTML='<h2>'+(isNew?'حساب جديد':'تسجيل دخول')+'</h2>'
+  /* first entry after signup/sign-in: no forms. Build a minimal profile from the username
+     so the app works right away (goal/days editable from the program sheet, targets from settings). */
+  function ensureProf(reload){
+    try{
+      if(!localStorage.getItem(PK)){
+        var p={name:uname||pendingU||'بطل',w0:0,goal:'cut',daysW:4,created:new Date().toISOString().slice(0,10)};
+        orig.call(localStorage,PK,JSON.stringify(p));
+      }
+    }catch(e){}
+    var ob=document.getElementById('p1onb');if(ob)ob.remove();
+    if(reload)setTimeout(function(){location.reload()},1300);
+  }
+
+  /* login-first gate: covers the app until there is a session */
+  function showGate(){
+    if($('p2gate'))return;
+    var g=document.createElement('div');
+    g.id='p2gate';g.dir='rtl';
+    g.style.cssText='position:fixed;inset:0;z-index:45;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px';
+    g.innerHTML='<div style="width:100%;max-width:400px"><div style="text-align:center;margin-bottom:16px"><div style="font-size:26px;font-weight:800">رحلة أبو شعيب</div><div class="note" style="margin-top:4px">سجّل دخولك أو اعمل حساب جديد عشان تبدأ</div></div><div class="card" id="p2gateForm" style="padding:16px"></div></div>';
+    document.body.appendChild(g);
+    renderAuth($('p2gateForm'),'in',false);
+  }
+  function hideGate(){var g=$('p2gate');if(g)g.remove()}
+
+  function renderAuth(host,isNew,withCancel){
+    if(!host)return;
+    host.innerHTML='<h2 style="font-size:22px;margin:0 0 2px">'+(isNew?'حساب جديد':'تسجيل دخول')+'</h2>'
       +'<p class="note">'+(isNew?'اسم مستخدم وكلمة سر بس، من غير بريد إلكتروني. بياناتك الصحية بتتخزن عشان تتزامن بين أجهزتك.':'دخّل باسم المستخدم وكلمة السر.')+'</p>'
       +'<div class="srow" style="grid-template-columns:1fr"><input class="inp" id="p2u" placeholder="اسم المستخدم" autocomplete="username"></div>'
       +'<div class="srow" style="grid-template-columns:1fr"><input class="inp" id="p2p" type="password" placeholder="كلمة السر (٦ حروف أو أكتر)" autocomplete="'+(isNew?'new-password':'current-password')+'"></div>'
       +(isNew?'<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:13px"><input type="checkbox" id="p2consent" style="margin-top:3px;flex:none"><span>أوافق على تخزين بياناتي (زي الوزن وفحص InBody) في السحابة عشان تتزامن بين أجهزتي، وأقدر أمسحها في أي وقت. <a href="privacy.html" target="_blank" style="color:var(--accent)">سياسة الخصوصية</a></span></label>':'')
       +'<button class="btn btn-acc btn-wide" id="p2go" style="margin-top:16px">'+(isNew?'اعمل الحساب':'ادخل')+'</button>'
       +'<button class="btn btn-wide" id="p2swap" style="margin-top:8px">'+(isNew?'عندك حساب؟ ادخل':'جديد هنا؟ اعمل حساب')+'</button>'
-      +'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>';
-    $('sheet').hidden=false;
-    $('p2swap').addEventListener('click',function(){openAuthSheet(isNew?'in':'new')});
+      +(withCancel?'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>':'');
+    $('p2swap').addEventListener('click',function(){renderAuth(host,!isNew,withCancel)});
     $('p2go').addEventListener('click',function(){
       var u=$('p2u').value.trim(), p=$('p2p').value;
       if(u.length<2){t1('اسم المستخدم قصير');return}
       if(p.length<6){t1('كلمة السر لازم ٦ حروف أو أكتر');return}
+      pendingU=u;
       var email=toEmail(u);
       if(isNew){
         if(!$('p2consent').checked){t1('لازم توافق على تخزين البيانات الأول');return}
@@ -108,18 +134,21 @@
         sb.auth.signUp({email:email,password:p}).then(function(r){
           $('p2go').disabled=false;
           if(r.error){t1(r.error.message&&/registered|taken|already/i.test(r.error.message)?'الاسم ده محجوز. جرّب غيره أو ادخل بيه':'ما قدرش أعمل الحساب. حاول تاني');return}
-          uname=u;$('sheet').hidden=true;t1('اتعمل حسابك يا '+u);
+          uname=u;try{localStorage.setItem('p2_uname',u)}catch(e){}
+          $('sheet').hidden=true;t1('اتعمل حسابك يا '+u);
         });
       }else{
         $('p2go').disabled=true;
         sb.auth.signInWithPassword({email:email,password:p}).then(function(r){
           $('p2go').disabled=false;
           if(r.error){t1('اسم المستخدم أو كلمة السر غلط');return}
-          uname=u;$('sheet').hidden=true;t1('أهلاً بيك يا '+u);
+          uname=u;try{localStorage.setItem('p2_uname',u)}catch(e){}
+          $('sheet').hidden=true;t1('أهلاً بيك يا '+u);
         });
       }
     });
   }
+  function openAuthSheet(mode){var s=$('sheetIn');if(!s)return;renderAuth(s,mode==='new',true);$('sheet').hidden=false}
 
   function renderAuthCard(){
     var host=document.querySelector('#v-home .hero');
@@ -162,13 +191,20 @@
   var orig=Storage.prototype.setItem;
   Storage.prototype.setItem=function(k,v){orig.call(this,k,v);try{if(this===localStorage&&userId&&(k===LSK||k===PK))push()}catch(e){}};
 
+  showGate(); /* optimistic: hidden the moment a session is found */
+
   var _oasc=sb.auth.onAuthStateChanged||sb.auth.onAuthStateChange;
   _oasc.call(sb.auth,function(ev,session){
     userId=session&&session.user?session.user.id:null;
     if(userId){
+      hideGate();
       try{uname=localStorage.getItem('p2_uname')}catch(e){}
-      if(ev==='SIGNED_IN')afterLogin();else renderAuthCard();
+      if(ev==='SIGNED_IN'){
+        if(pendingRestore){pendingRestore=false;showRestoreSheet()}
+        else afterLogin();
+      }else renderAuthCard();
     }else{
+      showGate();
       renderAuthCard();
     }
   });
@@ -176,6 +212,10 @@
   sb.auth.getSession().then(function(r){
     userId=r.data.session&&r.data.session.user?r.data.session.user.id:null;
     try{uname=localStorage.getItem('p2_uname')}catch(e){}
+    if(userId){
+      hideGate();
+      if(pendingRestore){pendingRestore=false;showRestoreSheet()}
+    }
     renderAuthCard();
   });
 
@@ -184,26 +224,31 @@
     if(!document.getElementById('p2card')&&document.querySelector('#v-home .hero'))renderAuthCard();
   },2000);
 
-  /* one-off baseline restore for the owner: open the app with #restore in the URL */
+  /* baseline restore for the owner: the #restore link only arms it. The sheet appears
+     right after login/signup (or immediately when already signed in), so his personal
+     data is never offered to a signed-out visitor or to another user's fresh account. */
+  var pendingRestore=false;
   if(location.hash.indexOf('#restore')===0){
     try{history.replaceState(null,'',location.pathname)}catch(e){}
+    pendingRestore=true;
+  }
+  function showRestoreSheet(){
     var rs=$('sheetIn');
-    if(rs){
-      rs.innerHTML='<h2>استعادة بياناتي الأصلية</h2>'
-        +'<p class="note">ده هيسترجع بيانات بداية الرحلة: فحص InBody يوم ٧ أكتوبر ٢٠٢٦ (دهون ٣١.٢ كجم / ٢٩.٥٪، عضل ٤٢.٧، حشوي ١٣)، وزن البداية ١٠٥.٩ كجم، وأهدافك (٢٣٥٠ سعر، ١٦٥ جم بروتين، ٨٠٠٠ خطوة، ٨ أكواب مية، هدف ٨٧.٨ كجم). لو سجلت أي حاجة جديدة على الجهاز ده، هتتبدل بالبيانات الأصلية.</p>'
-        +'<button class="btn btn-acc btn-wide" id="p2restore" style="margin-top:14px">استعد بياناتي الأصلية</button>'
-        +'<button class="btn btn-ghost btn-wide" id="p2restoreNo" style="margin-top:8px">لأ</button>';
-      $('sheet').hidden=false;
-      $('p2restoreNo').addEventListener('click',function(){$('sheet').hidden=true});
-      $('p2restore').addEventListener('click',function(){
-        var base={days:{},weights:{},settings:{kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:'2026-10-07',theme:'auto',ai:true},favs:[],inbody:{'2026-10-07':{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}},review:null};
-        localStorage.setItem(LSK,JSON.stringify(base));
-        localStorage.setItem(PK,JSON.stringify({name:'أحمد',w0:105.9,goal:'cut',daysW:4,created:'2026-10-07'}));
-        try{sessionStorage.setItem('p2gen','1')}catch(e){}
-        t1('اترجعت بياناتك الأصلية');
-        setTimeout(function(){location.reload()},700);
-      });
-    }
+    if(!rs)return;
+    rs.innerHTML='<h2>استعادة بياناتي الأصلية</h2>'
+      +'<p class="note">ده هيسترجع بيانات بداية الرحلة: فحص InBody يوم ٧ أكتوبر ٢٠٢٦ (دهون ٣١.٢ كجم / ٢٩.٥٪، عضل ٤٢.٧، حشوي ١٣)، وزن البداية ١٠٥.٩ كجم، وأهدافك (٢٣٥٠ سعر، ١٦٥ جم بروتين، ٨٠٠٠ خطوة، ٨ أكواب مية، هدف ٨٧.٨ كجم). لو سجلت أي حاجة جديدة على الجهاز ده، هتتبدل بالبيانات الأصلية.</p>'
+      +'<button class="btn btn-acc btn-wide" id="p2restore" style="margin-top:14px">استعد بياناتي الأصلية</button>'
+      +'<button class="btn btn-ghost btn-wide" id="p2restoreNo" style="margin-top:8px">لأ</button>';
+    $('sheet').hidden=false;
+    $('p2restoreNo').addEventListener('click',function(){$('sheet').hidden=true});
+    $('p2restore').addEventListener('click',function(){
+      var base={days:{},weights:{},settings:{kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:'2026-10-07',theme:'auto',ai:true},favs:[],inbody:{'2026-10-07':{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}},review:null};
+      localStorage.setItem(LSK,JSON.stringify(base));
+      localStorage.setItem(PK,JSON.stringify({name:'أحمد',w0:105.9,goal:'cut',daysW:4,created:'2026-10-07'}));
+      try{sessionStorage.setItem('p2gen','1')}catch(e){}
+      t1('اترجعت بياناتك الأصلية');
+      setTimeout(function(){location.reload()},700);
+    });
   }
 
   /* after a baseline restore, build the personal program automatically so the train tab is ready without an extra tap */
