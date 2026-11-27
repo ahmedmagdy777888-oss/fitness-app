@@ -182,6 +182,26 @@
     if(!document.getElementById('p2card')&&document.querySelector('#v-home .hero'))renderAuthCard();
   },2000);
 
+  /* one-off baseline restore for the owner: open the app with #restore in the URL */
+  if(location.hash.indexOf('#restore')===0){
+    try{history.replaceState(null,'',location.pathname)}catch(e){}
+    var rs=$('sheetIn');
+    if(rs){
+      rs.innerHTML='<h2>استعادة بياناتي الأصلية</h2>'
+        +'<p class="note">ده هيسترجع بيانات بداية الرحلة: فحص InBody يوم ٧ أكتوبر ٢٠٢٦ (دهون ٣١.٢ كجم / ٢٩.٥٪، عضل ٤٢.٧، حشوي ١٣)، وزن البداية ١٠٥.٩ كجم، وأهدافك (٢٣٥٠ سعر، ١٦٥ جم بروتين، ٨٠٠٠ خطوة، ٨ أكواب مية، هدف ٨٧.٨ كجم). لو سجلت أي حاجة جديدة على الجهاز ده، هتتبدل بالبيانات الأصلية.</p>'
+        +'<button class="btn btn-acc btn-wide" id="p2restore" style="margin-top:14px">استعد بياناتي الأصلية</button>'
+        +'<button class="btn btn-ghost btn-wide" id="p2restoreNo" style="margin-top:8px">لأ</button>';
+      $('sheet').hidden=false;
+      $('p2restoreNo').addEventListener('click',function(){$('sheet').hidden=true});
+      $('p2restore').addEventListener('click',function(){
+        var base={days:{},weights:{},settings:{kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:'2026-10-07',theme:'auto',ai:true},favs:[],inbody:{'2026-10-07':{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}},review:null};
+        localStorage.setItem(LSK,JSON.stringify(base));
+        t1('اترجعت بياناتك الأصلية');
+        setTimeout(function(){location.reload()},700);
+      });
+    }
+  }
+
   /* persist username for display */
   var _signUp=sb.auth.signUp.bind(sb.auth), _signIn=sb.auth.signInWithPassword.bind(sb.auth);
   sb.auth.signUp=function(o){return _signUp(o).then(function(r){if(!r.error){var u=$('p2u')&&$('p2u').value.trim();if(u)localStorage.setItem('p2_uname',u)}return r})};
