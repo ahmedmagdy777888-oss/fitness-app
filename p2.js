@@ -155,20 +155,11 @@
     }
   }
 
-  /* auto-push whenever the app saves either key */
-  var orig=localStorage.setItem.bind(localStorage);
-  localStorage.setItem=function(k,v){orig(k,v);if(userId&&(k===LSK||k===PK))push()};
+  /* auto-push whenever the app saves either key (patch the prototype so real calls are intercepted) */
+  try{localStorage.removeItem('setItem')}catch(e){}
+  var orig=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){orig.call(this,k,v);try{if(this===localStorage&&userId&&(k===LSK||k===PK))push()}catch(e){}};
 
-  sb.auth.onAuthStateChanged(function(ev,session){
-    var was=userId;
-    userId=session&&session.user?session.user.id:null;
-    if(userId){
-      try{uname=localStorage.getItem('p2_uname')}catch(e){}
-      if(!was)afterLogin();else renderAuthCard();
-    }else{
-      renderAuthCard();
-    }
-  });
   sb.auth.onAuthStateChanged(function(ev,session){
     userId=session&&session.user?session.user.id:null;
     if(userId){
@@ -184,6 +175,11 @@
     try{uname=localStorage.getItem('p2_uname')}catch(e){}
     renderAuthCard();
   });
+
+  /* the app re-renders #v-home on its own; re-add the card if it got wiped */
+  setInterval(function(){
+    if(!document.getElementById('p2card')&&document.querySelector('#v-home .hero'))renderAuthCard();
+  },2000);
 
   /* persist username for display */
   var _signUp=sb.auth.signUp.bind(sb.auth), _signIn=sb.auth.signInWithPassword.bind(sb.auth);
