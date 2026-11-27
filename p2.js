@@ -47,6 +47,15 @@
     },800);
   }
 
+  function pullSteps(){
+    if(!userId||typeof window.P2applySteps!=='function')return;
+    var since=new Date();since.setDate(since.getDate()-14);
+    var k=since.getFullYear()+'-'+String(since.getMonth()+1).padStart(2,'0')+'-'+String(since.getDate()).padStart(2,'0');
+    sb.from('step_entries').select('day,steps').gte('day',k).then(function(r){
+      if(r.data&&r.data.length)window.P2applySteps(r.data);
+    });
+  }
+
   function applyCloud(row){
     if(row.profile&&Object.keys(row.profile).length)localStorage.setItem(PK,JSON.stringify(row.profile));
     if(row.app_data&&Object.keys(row.app_data).length)localStorage.setItem(LSK,JSON.stringify(row.app_data));
@@ -61,6 +70,7 @@
         if(localHasData()){push();t1('اترفعت بيانات الجهاز ده على حسابك');ensureProf(false)}
         else{ensureProf(true);push()}
         renderAuthCard();
+        pullSteps();
         return;
       }
       var cloudEmpty=(!row.profile||!Object.keys(row.profile).length)&&(!row.app_data||!Object.keys(row.app_data).length);
@@ -70,7 +80,7 @@
         renderAuthCard();
         return;
       }
-      if(!localHasData()){applyCloud(row);return}
+      if(!localHasData()){applyCloud(row);pullSteps();return}
       /* both sides have data: let the user choose, naming both profiles */
       var s=$('sheetIn');if(!s)return;
       var cn=row.profile&&row.profile.name?String(row.profile.name):'';
@@ -81,8 +91,8 @@
         +'<button class="btn btn-wide" id="p2uselocal" style="margin-top:8px">اكمل ببيانات الجهاز ده (هترفع فوق اللي في السحابة)</button>'
         +'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>';
       $('sheet').hidden=false;
-      $('p2usecloud').addEventListener('click',function(){$('sheet').hidden=true;applyCloud(row)});
-      $('p2uselocal').addEventListener('click',function(){$('sheet').hidden=true;push();renderAuthCard();t1('اترفعت بيانات الجهاز ده على حسابك')});
+      $('p2usecloud').addEventListener('click',function(){$('sheet').hidden=true;applyCloud(row);pullSteps()});
+      $('p2uselocal').addEventListener('click',function(){$('sheet').hidden=true;push();renderAuthCard();t1('اترفعت بيانات الجهاز ده على حسابك');pullSteps()});
     });
   }
 
@@ -218,6 +228,7 @@
     if(userId){
       hideGate();
       if(pendingRestore){pendingRestore=false;showRestoreSheet()}
+      pullSteps();
     }
     renderAuthCard();
   });
@@ -227,9 +238,10 @@
     if(!document.getElementById('p2card')&&document.querySelector('#v-home .hero'))renderAuthCard();
   },2000);
 
-  /* baseline restore for the owner: the #restore link only arms it. The sheet appears
-     right after login/signup (or immediately when already signed in), so his personal
-     data is never offered to a signed-out visitor or to another user's fresh account. */
+  /* baseline restore: the #restore link only arms it. The restore runs right after
+     login/signup (or immediately when already signed in) and pulls only from the
+     signed-in user's own cloud row or a backup file they supply, so no personal
+     data exists in the served code or reaches a signed-out visitor. */
   var pendingRestore=false;
   if(location.hash.indexOf('#restore')===0){
     try{history.replaceState(null,'',location.pathname)}catch(e){}
@@ -239,19 +251,39 @@
     var rs=$('sheetIn');
     if(!rs)return;
     var ob=document.getElementById('p1onb');if(ob)ob.remove();
-    rs.innerHTML='<h2>استعادة بياناتي الأصلية</h2>'
-      +'<p class="note">ده هيسترجع بيانات بداية الرحلة: فحص InBody يوم ٧ أكتوبر ٢٠٢٦ (دهون ٣١.٢ كجم / ٢٩.٥٪، عضل ٤٢.٧، حشوي ١٣)، وزن البداية ١٠٥.٩ كجم، وأهدافك (٢٣٥٠ سعر، ١٦٥ جم بروتين، ٨٠٠٠ خطوة، ٨ أكواب مية، هدف ٨٧.٨ كجم). لو سجلت أي حاجة جديدة على الجهاز ده، هتتبدل بالبيانات الأصلية.</p>'
-      +'<button class="btn btn-acc btn-wide" id="p2restore" style="margin-top:14px">استعد بياناتي الأصلية</button>'
-      +'<button class="btn btn-ghost btn-wide" id="p2restoreNo" style="margin-top:8px">لأ</button>';
-    $('sheet').hidden=false;
-    $('p2restoreNo').addEventListener('click',function(){$('sheet').hidden=true});
-    $('p2restore').addEventListener('click',function(){
-      var base={days:{},weights:{},settings:{kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:'2026-10-07',theme:'auto',ai:true},favs:[],inbody:{'2026-10-07':{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}},review:null};
-      localStorage.setItem(LSK,JSON.stringify(base));
-      localStorage.setItem(PK,JSON.stringify({name:'أحمد',w0:105.9,goal:'cut',daysW:4,created:'2026-10-07'}));
-      try{sessionStorage.setItem('p2gen','1')}catch(e){}
-      t1('اترجعت بياناتك الأصلية');
-      setTimeout(function(){location.reload()},700);
+    /* owner-only restore: the baseline lives only in his authenticated cloud row,
+       or in a private JSON backup file he pastes/picks himself. Nothing is embedded
+       in the served code. */
+    sb.from('user_data').select('profile,app_data').eq('user_id',userId).maybeSingle().then(function(r){
+      var row=r.data;
+      if(!r.error&&row&&((row.profile&&Object.keys(row.profile).length)||(row.app_data&&Object.keys(row.app_data).length))){
+        applyCloud(row);return;
+      }
+      rs.innerHTML='<h2>استعادة بياناتي الأصلية</h2>'
+        +'<p class="note">مفيش بيانات محفوظة على الحساب ده لسه. لو معاك ملف النسخة الاحتياطية، الصق محتواه هنا أو اختاره، وهيترجع على الجهاز ده ويتخزن في حسابك. لو سجلت أي حاجة جديدة على الجهاز ده، هتتبدل بمحتوى النسخة.</p>'
+        +'<textarea class="inp" id="p2imp" rows="6" style="width:100%;margin-top:10px;font-family:monospace" dir="ltr" placeholder=\'{"profile":{...},"app_data":{...}}\'></textarea>'
+        +'<input type="file" id="p2impFile" accept="application/json,.json,.txt" style="margin-top:10px;width:100%">'
+        +'<button class="btn btn-acc btn-wide" id="p2restore" style="margin-top:14px">استعد بياناتي الأصلية</button>'
+        +'<button class="btn btn-ghost btn-wide" id="p2restoreNo" style="margin-top:8px">لأ</button>';
+      $('sheet').hidden=false;
+      $('p2restoreNo').addEventListener('click',function(){$('sheet').hidden=true});
+      $('p2impFile').addEventListener('change',function(ev){
+        var f=ev.target.files&&ev.target.files[0];if(!f)return;
+        var rd=new FileReader();rd.onload=function(){$('p2imp').value=String(rd.result||'')};rd.readAsText(f);
+      });
+      $('p2restore').addEventListener('click',function(){
+        var raw=($('p2imp').value||'').trim(), bak=null;
+        try{bak=JSON.parse(raw)}catch(e){}
+        var prof=bak&&bak.profile&&typeof bak.profile==='object'?bak.profile:null;
+        var data=bak&&bak.app_data&&typeof bak.app_data==='object'?bak.app_data:null;
+        if(!prof&&!data){t1('الملف مش سليم. الصق محتوى النسخة الاحتياطية كامل');return}
+        if(data)localStorage.setItem(LSK,JSON.stringify(data));
+        if(prof)localStorage.setItem(PK,JSON.stringify(prof));
+        try{sessionStorage.setItem('p2gen','1')}catch(e){}
+        push();
+        t1('اترجعت بياناتك الأصلية');
+        setTimeout(function(){location.reload()},700);
+      });
     });
   }
 
