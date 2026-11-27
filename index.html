@@ -222,7 +222,7 @@ h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;l
         <p id="dateLine"></p>
       </div>
       <div class="hero-btns">
-        <button class="iconbtn" id="settingsBtn" aria-label="الوأعدّواات"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.5h4l.4-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg></button>
+        <button class="iconbtn" id="settingsBtn" aria-label="الإعدادات"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.5h4l.4-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/></svg></button>
         <button class="iconbtn" id="themeBtn" aria-label="فاتح أو غامق"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.5A8 8 0 0 1 10.5 4 7 7 0 1 0 20 13.5z"/></svg></button>
       </div>
     </div>
@@ -655,7 +655,7 @@ async function putWeight(k,kg){
   db.doc('meta/settings').onSnapshot(d=>{if(d.exists){const v=d.data()||{};if(v.settings)SET=Object.assign({},DEF,v.settings);if(v.favs)S.favs=v.favs;if(v.review!==undefined)S.review=v.review;applySettings();saveLocal();renderAll(true)}},()=>{});
   db.collection('inbody').onSnapshot(snap=>{const m={};snap.docs.forEach(d=>m[d.id]=clone(d.data()));S.inbodyDb=m;saveLocal();renderAll(true)},()=>{});
 })();
-let setT;function putSettings(){saveLocal();if(!S.db)return;clearTimeout(setT);setT=setTimeout(()=>{S.db.doc('meta/settings').set({settings:SET,favs:S.favs,review:S.review}).catch(e=>toast('الوأعدّواات ما اتحفظتش عند Claude، بس متسجلة على جهازك.'))},400)}
+let setT;function putSettings(){saveLocal();if(!S.db)return;clearTimeout(setT);setT=setTimeout(()=>{S.db.doc('meta/settings').set({settings:SET,favs:S.favs,review:S.review}).catch(e=>toast('الإعدادات ما اتحفظتش عند Claude، بس متسجلة على جهازك.'))},400)}
 function putInBody(entry){S.inbodyDb[entry.date]=entry;saveLocal();renderAll();if(S.db){S.db.doc('inbody/'+entry.date).set(entry).catch(e=>toast('الفحص متسجل على جهازك بس. اتأكد من النت.'))}}
 
 /* ---------- helpers ---------- */
@@ -951,7 +951,7 @@ function cycleTheme(){SET.theme=SET.theme==='dark'?'light':'dark';applySettings(
 function openSettings(){
   const s=$('#sheetIn');
   const th=k=>`<button data-theme="${k}" aria-pressed="${SET.theme===k}">${{auto:'تلقائي',light:'فاتح',dark:'غامق'}[k]}</button>`;
-  s.innerHTML=`<h2>الأهداف والوأعدّواات</h2>
+  s.innerHTML=`<h2>الأهداف والإعدادات</h2>
   <div class="srow"><span class="lbl">السعرات اليومية</span><input class="inp num" id="sKcal" type="number" inputmode="numeric" value="${T.kcal}"></div>
   <div class="srow"><span class="lbl">البروتين اليومي (جم)</span><input class="inp num" id="sProt" type="number" inputmode="numeric" value="${T.prot}"></div>
   <div class="srow"><span class="lbl">هدف الخطوات</span><input class="inp num" id="sSteps" type="number" inputmode="numeric" value="${T.steps}"></div>
