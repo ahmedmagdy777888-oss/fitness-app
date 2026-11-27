@@ -160,7 +160,8 @@
   var orig=Storage.prototype.setItem;
   Storage.prototype.setItem=function(k,v){orig.call(this,k,v);try{if(this===localStorage&&userId&&(k===LSK||k===PK))push()}catch(e){}};
 
-  sb.auth.onAuthStateChanged(function(ev,session){
+  var _oasc=sb.auth.onAuthStateChanged||sb.auth.onAuthStateChange;
+  _oasc.call(sb.auth,function(ev,session){
     userId=session&&session.user?session.user.id:null;
     if(userId){
       try{uname=localStorage.getItem('p2_uname')}catch(e){}
