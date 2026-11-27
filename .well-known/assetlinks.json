@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.waadduu.app",
+    "sha256_cert_fingerprints": ["AB:F5:3A:51:60:00:F4:FF:06:D7:23:0A:FE:70:E6:04:88:EF:C5:1E:C1:40:DB:4A:F3:38:D9:30:5C:49:62:53"]
+  }
+}]
