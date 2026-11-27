@@ -867,11 +867,11 @@ function renderProg(){
 
 /* ---------- InBody ---------- */
 const INBODY0=[{date:'2026-10-07',fatKg:31.2,fatPct:29.5,muscle:42.7,visceral:13,whr:0.97}];
-function inbodyAll(){const m=new Map(INBODY0.map(e=>[e.date,e]));Object.values(S.inbodyDb||{}).forEach(e=>{if(e&&e.date)m.set(e.date,e)});return [...m.values()].sort((a,b)=>a.date<b.date?-1:1)}
-function inbodyDue(){const all=inbodyAll();const last=all[all.length-1];return Math.floor((new Date(todayK)-new Date(last.date))/864e5)>=42}
+function inbodyAll(){const m=new Map((window.P1&&P1.hideSeed?[]:INBODY0).map(e=>[e.date,e]));Object.values(S.inbodyDb||{}).forEach(e=>{if(e&&e.date)m.set(e.date,e)});return [...m.values()].sort((a,b)=>a.date<b.date?-1:1)}
+function inbodyDue(){const all=inbodyAll();const last=all[all.length-1];if(!last)return false;return Math.floor((new Date(todayK)-new Date(last.date))/864e5)>=42}
 function ibDiff(cur,prev,goodDown){if(!prev)return'';const d=Math.round((cur-prev)*100)/100;if(!d)return'<span class="lbl">ثابت</span>';const good=goodDown?d<0:d>0;return`<span class="${good?'diff-down':'diff-up'}">${d>0?'↑':'↓'} ${Math.abs(d)}</span>`}
 function renderInbody(){
-  const all=inbodyAll();const last=all[all.length-1];const prev=all.length>1?all[all.length-2]:null;
+  const all=inbodyAll();if(!all.length){$('#inbodyWrap').innerHTML='<div class="card"><h3 style="font-size:20px">فحص InBody</h3><p class="note">سجّل أول فحص ليك من التقرير، والتطبيق هيقارن كل فحص باللي قبله.</p><div class="row" style="margin-top:10px;flex-wrap:nowrap"><button class="btn btn-acc" id="inbAdd" style="flex:1">سجّل أول فحص</button></div></div>';return}const last=all[all.length-1];const prev=all.length>1?all[all.length-2]:null;
   const ld=new Date(last.date);const since=Math.floor((new Date(todayK)-ld)/864e5);
   $('#inbodyWrap').innerHTML=`<div class="card">
     <div class="spread"><h3 style="font-size:20px">فحص InBody</h3><span class="lbl num">${ld.getDate()} ${MON[ld.getMonth()]} ${ld.getFullYear()}</span></div>
@@ -1081,6 +1081,195 @@ show('home');
     im.onerror=function(){URL.revokeObjectURL(url);pick.value='';};
     im.src=url;
   });
+})();
+</script>
+
+<script>
+/* ---------- Phase 1: multi-user, fully on-device ----------
+   Each person sets up their own profile on their own phone. Profile lives in its own
+   localStorage key (abushuaib_profile_v1); the app data key (abushuaib_v1) keeps its
+   exact schema. Nothing is sent anywhere. */
+(function(){
+  var PK='abushuaib_profile_v1', LSK='abushuaib_v1';
+  function getP(){try{return JSON.parse(localStorage.getItem(PK)||'null')}catch(e){return null}}
+  function setP(p){try{localStorage.setItem(PK,JSON.stringify(p))}catch(e){}}
+  function t1(m){var e=document.getElementById('toast');if(!e)return;e.textContent=m;e.hidden=false;setTimeout(function(){e.hidden=true},2600)}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  var prof=getP();
+  var hadAppData=!!localStorage.getItem(LSK);
+  window.P1={hideSeed:!!prof};
+
+  var EXC={
+    incline:{n:'ضغط دمبل مائل بقبضة متوازية',s:3,r:'8–12'},
+    pulldown:{n:'سحب ظهر (لات بول داون)',s:3,r:'10–12'},
+    csrow:{n:'تجديف بالجهاز وصدرك على السند',s:3,r:'10–12'},
+    lateral:{n:'رفرفة جانبي',s:3,r:'12–15'},
+    pushdown:{n:'ترايسبس بالحبل',s:2,r:'12'},
+    curl:{n:'باي بالدمبل',s:2,r:'12'},
+    facepull:{n:'فيس بول',s:2,r:'15'},
+    legpress:{n:'ليج برس',s:4,r:'10–12'},
+    rdl:{n:'رومانيان ديدلفت بالدمبل',s:3,r:'10'},
+    legcurl:{n:'ليج كيرل',s:3,r:'12'},
+    lunge:{n:'لانجز مشي',s:2,r:'12 لكل رجل'},
+    calf:{n:'سمانة',s:3,r:'15'},
+    plank:{n:'بلانك',s:3,r:'30–45 ثانية'},
+    chestpress:{n:'تشست برس على الجهاز',s:3,r:'10–12'},
+    cablerow:{n:'تجديف كابل جالس',s:3,r:'10–12'},
+    neutralpd:{n:'سحب بقبضة متوازية',s:3,r:'10'},
+    hammer:{n:'هامر كيرل',s:2,r:'12'},
+    extrot:{n:'دوران خارجي بالكابل',s:2,r:'15'},
+    squat:{n:'هاك سكوات أو جوبلت سكوات',s:4,r:'8–12'},
+    hipthrust:{n:'هيب ثرست',s:3,r:'10'},
+    legext:{n:'ليج إكستنشن',s:3,r:'12–15'},
+    kneeraise:{n:'رفع ركب وإنت متعلق',s:3,r:'10'},
+    cardio:{n:'مشي على المشاية بميل',s:1,r:'20–30 دقيقة'}
+  };
+  var GOALS={cut:'تنشيف وحرق دهون',recomp:'لياقة وثبات',build:'زيادة عضل'};
+
+  function lastInbody(){
+    try{
+      var j=JSON.parse(localStorage.getItem(LSK)||'null');
+      var m=(j&&j.inbody)||{};
+      var arr=Object.keys(m).map(function(k){return m[k]}).filter(function(e){return e&&e.date}).sort(function(a,b){return a.date<b.date?-1:1});
+      return arr[arr.length-1]||null;
+    }catch(e){return null}
+  }
+
+  function buildProgram(goal,daysW,ib){
+    var fat=ib&&+ib.fatPct||0, vis=ib&&+ib.visceral||0, mus=ib&&+ib.muscle||0;
+    var days=[], notes=[];
+    if(daysW===3){
+      days=[
+        {t:'يوم 1 · جسم كامل أ',l:['squat','chestpress','cablerow','lateral','plank']},
+        {t:'يوم 2 · جسم كامل ب',l:['legpress','incline','pulldown','pushdown','curl']},
+        {t:'يوم 3 · جسم كامل ج',l:['rdl','neutralpd','lateral','hammer','kneeraise']}
+      ];
+    }else{
+      days=[
+        {t:'يوم 1 · علوي أ',l:['incline','pulldown','csrow','lateral','pushdown','curl','facepull']},
+        {t:'يوم 2 · سفلي أ',l:['legpress','rdl','legcurl','calf','plank']},
+        {t:'يوم 3 · علوي ب',l:['chestpress','cablerow','neutralpd','lateral','hammer','extrot']},
+        {t:'يوم 4 · سفلي ب',l:['squat','hipthrust','legext','legcurl','calf','kneeraise']}
+      ];
+    }
+    if(goal==='cut'){
+      days.forEach(function(d){d.l.push('cardio')});
+      notes.push('الكارديو بعد كل تمرين، وخلّي خطواتك 8 آلاف أو أكتر يومياً.');
+      notes.push('النزول الصحي حوالي نص لحد واحد كجم في الأسبوع. أسرع من كده بيضيّع عضل.');
+    }
+    if(goal==='build'){
+      notes.push('زوّد مجموعة على أول تمرينين في كل يوم لما الأداء يثبت.');
+      notes.push('البروتين أهم حاجة للبناء: حوالي 2 جرام لكل كجم من وزنك يومياً.');
+    }
+    if(goal==='recomp'){notes.push('ثبّت الأوزان وزوّدها بالتدريج، ومشي 30 دقيقة في أيام الراحة.');}
+    if(fat>=28)notes.push('نسبة الدهون عالية ('+fat+'%): الأولوية دلوقتي للتنشيف، والعضلات تكبر تحتها.');
+    if(vis>=10)notes.push('الدهون الحشوية ('+vis+') أعلى من الطبيعي: الكارديو والمشي مش اختياري.');
+    if(mus&&mus<30)notes.push('كتلتك العضلية ('+mus+' كجم) محتاجة بناء: التزم بالبروتين وبالتدرج في الأوزان.');
+    notes.push('رتّب الأيام بحيث يبقى فيه راحة بين كل يومين قدر الإمكان.');
+    return {created:new Date().toISOString().slice(0,10),goal:goal,goalLbl:GOALS[goal],daysW:daysW,days:days,notes:notes};
+  }
+
+  function renderProgCard(){
+    if(!prof)return;
+    var host=document.getElementById('v-train');if(!host)return;
+    var chips=document.getElementById('planChips');if(!chips)return;
+    var card=document.getElementById('p1card');
+    if(!card){card=document.createElement('div');card.id='p1card';host.insertBefore(card,chips);}
+    var pr=prof.program,h='';
+    if(!pr){
+      h='<div class="card"><h3 style="font-size:20px">برنامج '+esc(prof.name)+' الشخصي</h3>'
+       +'<p class="note">برنامج تمرين متبني على جسمك وهدفك، وأدق لو سجّلت فحص InBody.</p>'
+       +'<button class="btn btn-acc btn-wide" id="p1make" style="margin-top:10px">اعمل برنامجي</button></div>';
+    }else{
+      h='<div class="card"><div class="spread"><h3 style="font-size:20px">برنامج '+esc(prof.name)+'</h3>'
+       +'<span class="lbl">'+pr.goalLbl+' · '+pr.days.length+' أيام</span></div>';
+      pr.notes.forEach(function(n){h+='<p class="note">'+esc(n)+'</p>'});
+      pr.days.forEach(function(d){
+        h+='<div style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px"><b>'+esc(d.t)+'</b>';
+        d.l.forEach(function(x){var e=EXC[x];if(e)h+='<div class="ibrow"><span>'+esc(e.n)+'</span><span class="num">'+e.s+' × '+e.r+'</span></div>'});
+        h+='</div>';
+      });
+      h+='<button class="btn btn-ghost btn-wide" id="p1make" style="margin-top:10px">غيّر البرنامج</button></div>';
+    }
+    card.innerHTML=h;
+    document.getElementById('p1make').addEventListener('click',openProgSheet);
+  }
+
+  function openProgSheet(){
+    var s=document.getElementById('sheetIn');if(!s)return;
+    var ib=lastInbody();
+    var cur=prof.program;
+    s.innerHTML='<h2>برنامجك الشخصي</h2>'
+      +(ib&&ib.fatPct?'<p class="note">آخر فحص '+ib.date+': دهون '+ib.fatPct+'% · عضلات '+(ib.muscle||'—')+' كجم</p>'
+        :'<p class="note">نصيحة: سجّل فحص InBody من تبويب التقدم الأول، عشان البرنامج يبقى مبني على جسمك الحقيقي.</p>')
+      +'<div class="srow"><span class="lbl">هدفك</span><select class="inp" id="p1goal">'
+      +'<option value="cut"'+((prof.goal==='cut')?' selected':'')+'>تنشيف وحرق دهون</option>'
+      +'<option value="recomp"'+((prof.goal==='recomp')?' selected':'')+'>لياقة وثبات</option>'
+      +'<option value="build"'+((prof.goal==='build')?' selected':'')+'>زيادة عضل</option></select></div>'
+      +'<div class="srow"><span class="lbl">أيام التمرين بالأسبوع</span><select class="inp" id="p1days">'
+      +'<option value="3"'+((prof.daysW===3)?' selected':'')+'>3</option>'
+      +'<option value="4"'+((!prof.daysW||prof.daysW===4)?' selected':'')+'>4</option></select></div>'
+      +'<button class="btn btn-acc btn-wide" id="p1gen" style="margin-top:16px">اعمل البرنامج</button>'
+      +'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>';
+    document.getElementById('sheet').hidden=false;
+    document.getElementById('p1gen').addEventListener('click',function(){
+      var g=document.getElementById('p1goal').value;
+      var d=+document.getElementById('p1days').value;
+      prof.program=buildProgram(g,d,lastInbody());
+      prof.goal=g;prof.daysW=d;setP(prof);
+      document.getElementById('sheet').hidden=true;
+      renderProgCard();
+      t1('برنامجك جاهز يا '+prof.name);
+    });
+  }
+
+  /* greetings: swap the hardcoded name for the profile name */
+  function patchGreet(){
+    if(!prof)return;
+    var g=document.getElementById('greet');
+    if(g){var t=g.textContent;var nt=t.replace(/أحمد/g,prof.name).replace(/أبو شعيب/g,prof.name);if(nt!==t)g.textContent=nt;}
+    var av=document.getElementById('avatarImg');if(av&&av.alt==='أحمد')av.alt=prof.name;
+  }
+  var gEl=document.getElementById('greet');
+  if(gEl&&window.MutationObserver){new MutationObserver(function(){patchGreet()}).observe(gEl,{childList:true,characterData:true,subtree:true});}
+
+  function openOnb(){
+    var w=document.createElement('div');
+    w.className='sheet';w.id='p1onb';w.dir='rtl';
+    w.innerHTML='<div><h2 style="font-size:22px;margin:0">أهلاً بيك</h2>'
+      +'<p class="note">التطبيق ده بيشتغل على جهازك أنت، وبياناتك بتفضل على تليفونك وما بتتبعتش لأي حتة. عرّفنا بنفسك الأول.</p>'
+      +'<div class="srow" style="grid-template-columns:1fr"><input class="inp" id="p1name" placeholder="اسمك" autocomplete="name"></div>'
+      +'<div class="srow"><span class="lbl">وزنك الحالي (كجم) · اختياري</span><input class="inp num" id="p1w" type="number" step="0.1" inputmode="decimal" placeholder="80"></div>'
+      +'<div class="srow"><span class="lbl">هدفك</span><select class="inp" id="p1g">'
+      +'<option value="cut">تنشيف وحرق دهون</option><option value="recomp">لياقة وثبات</option><option value="build">زيادة عضل</option></select></div>'
+      +'<button class="btn btn-acc btn-wide" id="p1start" style="margin-top:16px">يلا نبدأ</button></div>';
+    document.body.appendChild(w);
+    document.getElementById('p1start').addEventListener('click',function(){
+      var name=document.getElementById('p1name').value.trim();
+      if(!name){t1('اكتب اسمك الأول');return}
+      var w0=+document.getElementById('p1w').value||0;
+      var g=document.getElementById('p1g').value;
+      var today=new Date().toISOString().slice(0,10);
+      prof={name:name,w0:w0,goal:g,daysW:4,created:today};
+      setP(prof);
+      /* write well-formed app data with the exact existing schema so home targets fit this user */
+      try{
+        var j=JSON.parse(localStorage.getItem(LSK)||'null')||{};
+        j.days=j.days||{};j.weights=j.weights||{};j.favs=j.favs||[];j.inbody=j.inbody||{};j.review=j.review||null;
+        if(w0)j.weights[today]={kg:w0};
+        var kcal=w0?Math.round((g==='cut'?w0*22:g==='build'?w0*30:w0*26)/50)*50:2350;
+        var prot=w0?Math.round(w0*(g==='build'?2:1.8)):165;
+        j.settings=Object.assign({kcal:2350,prot:165,steps:8000,water:8,goal:87.8,startKg:105.9,startDate:today,theme:'auto',ai:true},j.settings||{});
+        j.settings.startDate=today;j.settings.kcal=kcal;j.settings.prot=prot;
+        if(w0){j.settings.startKg=w0;j.settings.goal=g==='cut'?Math.round(w0*0.9*10)/10:w0}
+        localStorage.setItem(LSK,JSON.stringify(j));
+      }catch(e){}
+      location.reload();
+    });
+  }
+
+  if(!prof&&!hadAppData){openOnb()}
+  else if(prof){patchGreet();renderProgCard()}
 })();
 </script>
 
