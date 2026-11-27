@@ -6,7 +6,7 @@
   if(!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY||!window.supabase)return;
   var LSK='abushuaib_v1', PK='abushuaib_profile_v1';
   var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
-  var userId=null, uname=null, syncT=null, pullT=null, pendingU='';
+  var userId=null, uname=null, syncT=null, pullT=null, pendingU='', loginHandled=false;
 
   function $(id){return document.getElementById(id)}
   function t1(m){var e=$('toast');if(!e)return;e.textContent=m;e.hidden=false;setTimeout(function(){e.hidden=true},2800)}
@@ -201,7 +201,7 @@
       try{uname=localStorage.getItem('p2_uname')}catch(e){}
       if(ev==='SIGNED_IN'){
         if(pendingRestore){pendingRestore=false;showRestoreSheet()}
-        else if(pendingU){pendingU='';afterLogin()}
+        else if(pendingU&&!loginHandled){loginHandled=true;afterLogin()}
         else renderAuthCard();
       }else renderAuthCard();
     }else{
