@@ -19,9 +19,10 @@ jobs:
           set -e
           mkdir _site
           cp index.html clip-*.js _site/
-          for n in apple-touch-icon icon-192 icon-512; do
+          for n in apple-touch-icon icon-192; do
             base64 -d icons/$n.b64 > _site/$n.png
           done
+          cat icons/icon-512.b64a icons/icon-512.b64b | base64 -d > _site/icon-512.png
           ls -la _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
