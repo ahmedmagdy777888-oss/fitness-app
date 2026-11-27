@@ -213,7 +213,9 @@
       setTimeout(function(){
         var tb=document.querySelector('button.tab[data-v="train"]');
         if(tb)tb.click();
-        setTimeout(function(){var mk=$('p1make');if(mk)mk.click()},450);
+        setTimeout(function(){var mk=$('p1make');if(mk)mk.click();
+          setTimeout(function(){var gen=$('p1gen');if(gen)gen.click()},350);
+        },450);
       },500);
     }
   }catch(e){}
