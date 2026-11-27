@@ -201,7 +201,8 @@
       try{uname=localStorage.getItem('p2_uname')}catch(e){}
       if(ev==='SIGNED_IN'){
         if(pendingRestore){pendingRestore=false;showRestoreSheet()}
-        else afterLogin();
+        else if(pendingU){pendingU='';afterLogin()}
+        else renderAuthCard();
       }else renderAuthCard();
     }else{
       showGate();
@@ -235,6 +236,7 @@
   function showRestoreSheet(){
     var rs=$('sheetIn');
     if(!rs)return;
+    var ob=document.getElementById('p1onb');if(ob)ob.remove();
     rs.innerHTML='<h2>استعادة بياناتي الأصلية</h2>'
       +'<p class="note">ده هيسترجع بيانات بداية الرحلة: فحص InBody يوم ٧ أكتوبر ٢٠٢٦ (دهون ٣١.٢ كجم / ٢٩.٥٪، عضل ٤٢.٧، حشوي ١٣)، وزن البداية ١٠٥.٩ كجم، وأهدافك (٢٣٥٠ سعر، ١٦٥ جم بروتين، ٨٠٠٠ خطوة، ٨ أكواب مية، هدف ٨٧.٨ كجم). لو سجلت أي حاجة جديدة على الجهاز ده، هتتبدل بالبيانات الأصلية.</p>'
       +'<button class="btn btn-acc btn-wide" id="p2restore" style="margin-top:14px">استعد بياناتي الأصلية</button>'
