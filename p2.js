@@ -4,7 +4,7 @@
    public.user_data protected by row level security. Signup requires the Arabic consent. */
 (function(){
   if(!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY||!window.supabase)return;
-  window.__p2v='gate5';
+  window.__p2v='gate6';
   var LSK='abushuaib_v1', PK='abushuaib_profile_v1';
   var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
   var userId=null, uname=null, syncT=null, pullT=null, pendingU='', loginHandled=false;
@@ -105,7 +105,7 @@
     var g=document.createElement('div');
     g.id='p2gate';g.dir='rtl';
     g.style.cssText='position:fixed;inset:0;z-index:45;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px';
-    g.innerHTML='<div style="width:100%;max-width:400px"><div style="text-align:center;margin-bottom:16px"><div style="font-size:26px;font-weight:800">رحلة أبو شعيب</div><div class="note" style="margin-top:4px">سجّل دخولك أو اعمل حساب جديد عشان تبدأ</div></div><div class="card" id="p2gateForm" style="padding:16px"></div></div>';
+    g.innerHTML='<div style="width:100%;max-width:400px"><div style="text-align:center;margin-bottom:16px"><div style="font-size:26px;font-weight:800">وأعدّوا</div><div class="note" style="margin-top:4px">سجّل دخولك أو اعمل حساب جديد عشان تبدأ</div></div><div class="card" id="p2gateForm" style="padding:16px"></div></div>';
     document.body.appendChild(g);
     renderAuth($('p2gateForm'),false,false);
   }
