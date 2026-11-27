@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script src="clip-chestpress.js"></script><script src="clip-cablerow.js"></script><script src="clip-neutralpd.js"></script>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>رحلة أبو شعيب</title>
 <meta name="theme-color" content="#0E1517" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="#F1F6F5" media="(prefers-color-scheme: light)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,6 +82,7 @@ h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;l
 .ex-head{display:grid;grid-template-columns:92px 1fr;gap:14px;padding:14px;align-items:center}
 .ex-anim{width:92px;height:76px;background:var(--surface2);border-radius:20px;border:0;padding:0}
 .ex-anim svg{width:100%;height:100%}
+.ex-anim video{width:100%;height:100%;object-fit:cover;border-radius:20px;display:block}
 .ex h3{font-size:17px}
 .ex .meta{font-size:12.5px;color:var(--muted)}
 .ex .last{font-size:12.5px;color:var(--accent);margin-top:2px}
@@ -110,6 +112,7 @@ h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;l
 .sheet>div{background:var(--surface);width:100%;max-width:520px;max-height:92%;overflow:auto;border-radius:32px 32px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px))}
 .sheet .big{background:var(--surface2);border-radius:26px;aspect-ratio:5/4;max-width:100%}
 .sheet .big svg{width:100%;height:100%}
+.sheet .big video{width:100%;height:100%;object-fit:contain;border-radius:26px;display:block}
 .sheet h2{font-size:23px;margin-top:14px}
 .sheet h3{font-size:16px}
 .sheet ul{padding-inline-start:20px;margin:6px 0}
@@ -431,7 +434,22 @@ const ROLE={
 const SHOE_END=new Set(['kn-ft','kf-ff','kb-fb','kl-fl','kr-fr']);
 const HAND_J=['ha','hl','hr'];
 const IMG={"incline": [9, 220, 218], "pulldown": [9, 156, 220], "csrow": [9, 220, 210], "lateral": [9, 186, 220], "pushdown": [9, 131, 220], "curl": [9, 85, 220], "facepull": [9, 199, 220], "chestpress": [9, 185, 220], "cablerow": [9, 220, 204], "hammer": [9, 78, 220], "extrot": [9, 150, 220], "legpress": [9, 220, 187], "rdl": [9, 118, 220], "legcurl": [9, 220, 157], "lunge": [9, 168, 220], "calf": [9, 74, 220], "plank": [9, 220, 87], "squat": [9, 86, 220], "hipthrust": [9, 220, 172], "legext": [9, 220, 212], "kneeraise": [9, 142, 220], "walk": [9, 207, 220]};
-function mkAnim(key){
+const CLIPURL={};
+function clipURL(exid){
+  if(CLIPURL[exid])return CLIPURL[exid];
+  try{
+    if(!window.CLIPDATA||!CLIPDATA[exid])return null;
+    const bin=atob(CLIPDATA[exid]);const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    return CLIPURL[exid]=URL.createObjectURL(new Blob([bytes],{type:'video/mp4'}));
+  }catch(_){return null}
+}
+function mkAnim(key,exid){
+  const clip=exid&&clipURL(exid);
+  if(clip){const v=document.createElement('video');v.src=clip;v.muted=true;v.loop=true;v.autoplay=true;v.preload='auto';v.setAttribute('playsinline','');v.setAttribute('muted','');v.setAttribute('aria-hidden','true');
+    let fb=false;const back=()=>{if(fb)return;fb=true;if(v.isConnected)v.replaceWith(mkAnim(key))};
+    v.addEventListener('error',back);try{v.disableRemotePlayback=true}catch(_){}
+    return v}
   if(window.USE_FRAME_IMAGES&&IMG[key]){const [nf,iw,ih]=IMG[key];const sv=document.createElementNS(svgNS,'svg');sv.setAttribute('viewBox','0 0 200 160');sv.setAttribute('aria-hidden','true');
     const sc=Math.min(188/iw,152/ih),w=iw*sc,h=ih*sc,x=(200-w)/2,y=(160-h)/2;
     const ims=[];for(let n=0;n<nf;n++){const im=document.createElementNS(svgNS,'image');im.setAttribute('x',x);im.setAttribute('y',y);im.setAttribute('width',w);im.setAttribute('height',h);im.setAttribute('opacity',n===0?1:0);sv.appendChild(im);ims.push(im)}
@@ -714,7 +732,7 @@ function renderTrain(){
     const done=all.every(x=>x.d);const last=lastFor(id,todayK);const sug=suggestFor(id);
     const el=document.createElement('div');el.className='ex'+(done?' done':'');
     el.innerHTML=`<div class="ex-head"><button class="ex-anim" data-how="${id}" aria-label="شرح ${esc(e.n)}"></button><div style="min-width:0"><h3>${idx+1}. ${esc(e.n)}</h3><div class="meta num">${e.cardio?e.r:e.s+' × '+e.r}${e.rest?' · راحة '+e.rest+' ث':''}</div>${sug?`<div class="last num">${sug.up?'💪 ':'💡 '}${esc(sug.txt)}</div>`:(last?`<div class="last num">آخر مرة: ${last.w} كجم × ${esc(last.r||'')}</div>`:'')}<button class="how" data-how="${id}">شرح الحركة</button></div></div><div class="sets"></div>`;
-    el.querySelector('.ex-anim').appendChild(mkAnim(e.a));
+    el.querySelector('.ex-anim').appendChild(mkAnim(e.a,id));
     const box=el.querySelector('.sets');
     all.forEach((st,i)=>{
       const r=document.createElement('div');r.className='set'+(st.d?' isdone':'');
@@ -744,7 +762,7 @@ $('#tAdd').onclick=()=>{tEnd+=15000;upd()};
 function openHow(id){
   const e=EX[id];const s=$('#sheetIn');
   s.innerHTML=`<div class="big"></div><h2>${esc(e.n)}</h2><span class="tag">${esc(e.m)}</span><span class="tag num">${e.cardio?e.r:e.s+' × '+e.r}</span><h3 style="font-size:18px;margin-top:14px">الأداء الصح</h3><ul>${e.c.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h3 style="font-size:18px;margin-top:10px;color:var(--warn)">ابعد عن</h3><ul>${e.x.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${e.k?`<div class="quote" style="margin-top:10px;display:flex;gap:8px;align-items:flex-start;color:var(--warn)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 15.5H3z"/><path d="M12 10v4.5M12 17.4v.1"/></svg><span style="color:var(--fg)">${esc(e.k)}</span></div>`:''}<button class="btn btn-ghost btn-wide" style="margin-top:14px" id="closeSheet">تمام</button>`;
-  s.querySelector('.big').appendChild(mkAnim(e.a));$('#sheet').hidden=false;
+  s.querySelector('.big').appendChild(mkAnim(e.a,id));$('#sheet').hidden=false;
 }
 $('#sheet').addEventListener('click',ev=>{if(ev.target.id==='sheet'||ev.target.id==='closeSheet')$('#sheet').hidden=true});
 
