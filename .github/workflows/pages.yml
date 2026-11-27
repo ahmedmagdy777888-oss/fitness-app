@@ -26,10 +26,15 @@ jobs:
           cat icons/icon-512.b64a icons/icon-512.b64b | base64 -d > _site/icon-512.png
           ls -la _site
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v4
+      - name: Package site (tar, includes .well-known)
+        shell: bash
+        run: tar --dereference --hard-dereference --directory _site -cvf "$RUNNER_TEMP/artifact.tar" --exclude=.git --exclude=.github .
+      - uses: actions/upload-artifact@v4
         with:
-          path: _site
-          include-hidden-files: true
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
   deploy:
     needs: build
     runs-on: ubuntu-latest
