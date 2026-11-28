@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script src="clip-chestpress.js?v=4"></script><script src="clip-cablerow.js?v=4"></script><script src="clip-neutralpd.js?v=4"></script><script src="clip-lateral.js?v=4"></script><script src="clip-pushdown.js?v=4"></script><script src="clip-hammer.js?v=4"></script><script src="clip-extrot.js?v=4"></script><script src="clip-incline.js?v=4"></script><script src="clip-pulldown.js?v=4"></script><script src="clip-curl.js?v=4"></script><script src="clip-facepull.js?v=4"></script><script src="clip-legcurl.js?v=4"></script><script src="clip-lunge.js?v=4"></script><script src="clip-calf.js?v=4"></script><script src="clip-plank.js?v=4"></script><script src="clip-squat.js?v=4"></script><script src="clip-hipthrust.js?v=4"></script><script src="clip-legext.js?v=4"></script><script src="clip-kneeraise.js?v=4"></script><script src="clip-cardio.js?v=4"></script><script>window.SUPABASE_URL="https://tdehtavbbpobgozvhaue.supabase.co";window.SUPABASE_ANON_KEY="sb_publishable_WoIITBJ7-U_p3Xka-EzWag_KvZbXSaf";</script><script src="supabase.js?v=4"></script><script src="i18n.js?v=5"></script>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script src="clip-chestpress.js?v=4"></script><script src="clip-cablerow.js?v=4"></script><script src="clip-neutralpd.js?v=4"></script><script src="clip-lateral.js?v=4"></script><script src="clip-pushdown.js?v=4"></script><script src="clip-hammer.js?v=4"></script><script src="clip-extrot.js?v=4"></script><script src="clip-incline.js?v=4"></script><script src="clip-pulldown.js?v=4"></script><script src="clip-curl.js?v=4"></script><script src="clip-facepull.js?v=4"></script><script src="clip-legcurl.js?v=4"></script><script src="clip-lunge.js?v=4"></script><script src="clip-calf.js?v=4"></script><script src="clip-plank.js?v=4"></script><script src="clip-squat.js?v=4"></script><script src="clip-hipthrust.js?v=4"></script><script src="clip-legext.js?v=4"></script><script src="clip-kneeraise.js?v=4"></script><script src="clip-cardio.js?v=4"></script><script>window.SUPABASE_URL="https://tdehtavbbpobgozvhaue.supabase.co";window.SUPABASE_ANON_KEY="sb_publishable_WoIITBJ7-U_p3Xka-EzWag_KvZbXSaf";</script><script src="supabase.js?v=7"></script><script src="i18n.js?v=7"></script>
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>وأعدّوا</title>
 <meta name="theme-color" content="#0E1517" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="#F1F6F5" media="(prefers-color-scheme: light)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,9 +288,10 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;l
     </div>
 
     <div class="sec-h"><h2>أضف بسرعة</h2></div>
+    <input class="inp" id="foodQ" placeholder="دوّر على أكلة…" style="margin-bottom:8px">
     <div class="chips" id="catChips"></div>
     <div class="food-list" id="presets"></div>
-    <p class="note"><span class="tier t-g"></span>براحتك <span class="tier t-y" style="margin-inline-start:10px"></span>بحساب <span class="tier t-r" style="margin-inline-start:10px"></span>مرة في الأسبوع · الأرقام تقديرية: جريلو ما بينزلش سعرات في المنيو، فدي تقديرات لحجم الطبق العادي · الأسعار من المنيو بالريال</p>
+    <p class="note"><span class="tier t-g"></span>براحتك <span class="tier t-y" style="margin-inline-start:10px"></span>بحساب <span class="tier t-r" style="margin-inline-start:10px"></span>مرة في الأسبوع · الأرقام تقديرية للحصة المذكورة</p>
 
     <div class="sec-h"><h2>أكلة مش في القائمة</h2></div>
     <div class="form">
@@ -561,65 +562,49 @@ const PLANS={
 const SCHED={2:'upperA',3:'lowerA',5:'upperB',6:'lowerB'};
 
 /* ---------- food presets ---------- */
+/* generic food DB: [arabic name, kcal, protein, tier (g freely / y careful / r once a week), price?, english name] */
 const FOOD={};
-/* [الاسم, سعرات, بروتين, tier (g براحتك / y بحساب / r مرة في الأسبوع), السعر بالريال] — جريلو: تقدير لحجم الطبق العادي، المنيو نفسه ما فيهوش سعرات */
-const GRILLO={
- 'مشاوي':[
-  ['شيش طاووق من غير بطاطس',450,48,'g'],['كباب دجاج',480,44,'g'],['نص دجاج على الفحم من غير جلد',560,62,'g'],
-  ['شيش طاووق مع بطاطس',700,50,'y'],['دجاج شواية (نص)',650,60,'y'],['أوصال لحم',600,48,'y'],['مشوي لحم',700,48,'y'],
-  ['كباب لحم',650,40,'y'],['كباب رمان',600,36,'y',43],['كباب توت وكرز',600,36,'y',43],['طرب',550,35,'y'],
-  ['ريش غنم',850,45,'r',45],['مشاوي مشكلة (طبق كامل)',1100,80,'r'],['مشاوي جريللو (بوكس)',1300,85,'r']],
- 'شاورما وبروستد':[
-  ['ساندويتش تونة',280,18,'g',5],['ساندويتش شاورما دجاج عراقي',480,26,'y',11],['ساندويتش شاورما لحم عراقي',520,24,'y',12],
-  ['ساندويتش شاورما دجاج',450,26,'y'],['ساندويتش شاورما لحم',480,24,'y'],['دجاج تاكو',450,28,'y'],['لحم تاكو',480,26,'y'],
-  ['ساندويتش فلافل',450,14,'y'],['فاهيتا (طبق)',650,42,'y'],['ستيك (طبق)',750,45,'y'],['برجر دجاج',650,32,'y'],
-  ['شاورما دجاج عربي (طبق)',800,42,'r'],['شاورما لحم عربي (طبق)',850,38,'r'],['شاميات شاورما دجاج',900,45,'r'],
-  ['برجر لحم',750,34,'r'],['بروستد',950,42,'r',19],['بروستد حار',950,42,'r',20],['مسحب',850,36,'r',20],['نقانق',550,14,'r']],
- 'أطباق وطواجن':[
-  ['ايدام ملوخية',200,12,'g',18],['ايدام بامية',250,14,'g',18],['ايدام خضار',150,4,'g',17],
-  ['حميس',450,32,'y',35],['هامور مقلي',700,42,'y',35],['طاجن كاري البحر',700,38,'y',45],['طاجن بامية',600,28,'y',24],
-  ['طاجن تركي كباب',750,36,'y',37],['طاجن مسقعة',400,8,'y',20],['مربيان',850,36,'y',45],['دجاج مسالا',800,42,'y',39],
-  ['دجاج ترياكي',800,40,'y',39],['ملفوف',300,10,'y',18],['محاشي',320,8,'y',18],['دولمة',380,10,'y',31],
-  ['كبة باللبن',500,20,'y',30],['كوسة باللبن',450,20,'y',33],['شيش برك',520,18,'y',30],['موزة لحم مع بطاطس مهروسة',900,58,'y',49],
-  ['مجبوس',950,46,'r',32],['دجاج برياني',950,44,'r'],['دجاج محمر',700,46,'r'],['موزة لحم مع رز كبسة',1150,60,'r',49],
-  ['فتة لحم موزة',1100,55,'r',49],['مضغوط حاشي',1300,60,'r',59],['سباغيتي لحم',650,26,'r',22],['بينك صوص باستا',800,22,'r',30],
-  ['فوتشيني',900,20,'r',30],['بشاميل',600,20,'r',20],['كرات بطاطس',500,12,'r',25],['سجق اسكندراني',450,18,'r',20],
-  ['فتة ورق عنب',600,10,'r',24],['فتة باذنجان',550,10,'r',24]],
- 'مقبلات وشوربة':[
-  ['سلطة دجاج سيزر',380,30,'g',18],['سلطة يونانية',220,8,'g',13],['سلطة كينوا',250,7,'g',16],['زبادي شمندر',120,6,'g',13],
-  ['سلطة خضراء',60,2,'g',11],['تبولة',150,3,'g',13],['شوربة الحريرة',220,10,'g',18],['شوربة الشوفان',200,7,'g',16],
-  ['شوربة الدجاج',280,12,'y',16],['شوربة الفطر',300,6,'y',16],['فتوش',200,4,'y',13],['حمص باللحمة',420,22,'y',19],
-  ['متبل باللحمة',380,18,'y',19],['كابريسي',300,14,'y',20],['حمص بيروتي',250,8,'y',13],['متبل',190,4,'y',11],
-  ['جوانح دجاج',450,28,'y',20],['صحن فلافل',400,12,'y',10],['كبة',350,12,'y',15],['كبة سيخ',700,35,'y',35],
-  ['سمبوسة',300,9,'y',12],['سلطة مكرونة',250,6,'y',13],['كول سلو',220,2,'y',16],['سلطة ألمانية',300,4,'y',16],
-  ['سلطة ولدورف أناناس',350,5,'y',20],['أصابع جبن',400,14,'r',15],['حلقات البصل',450,6,'r',18],['سبرنغ رولز',280,6,'r',12],
-  ['مزة ساخنة مشكلة',900,25,'r',35]],
- 'جانبية':[
-  ['مياه',0,0,'g',1],['رز أبيض',250,5,'y',8],['رز مصري',300,6,'y',10],['رز برياني',350,7,'y',10],
-  ['خبز عربي',80,3,'y',1],['خبز فرن',150,5,'y',1],['بطاطس بالجبن',550,12,'r',15],['بطاطس',400,5,'r',10]]
-};
 const RK={g:0,y:1,r:2};
 const dens=f=>f[1]?f[2]/f[1]:9;
 const ord=a=>a.sort((x,y)=>RK[x[3]]-RK[y[3]]||dens(y)-dens(x));
-const ALLG=[].concat(...Object.values(GRILLO).map(ord));
-FOOD['الأفضل في جريلو']=ALLG.filter(f=>f[3]!=='r'&&f[2]>=18&&f[1]<=700).sort((x,y)=>dens(y)-dens(x)).slice(0,14);
-Object.assign(FOOD,GRILLO);
-FOOD['مطاعم تانية']=ord([
-  ['ربع فراخ مشوي من غير جلد + سلطة',330,38,'g'],['نص فراخ مشوي + سلطة',600,65,'g'],
-  ['صحن كبدة',450,40,'g'],['صحن تونة بالصلصة',400,35,'g'],['كفتة أو شيش طاووق + سلطة',550,45,'g'],
-  ['نص فراخ + نص رز برياني',880,70,'y'],['نص فراخ + رز برياني كامل',1150,75,'r'],
-  ['مندي فراخ (نص فراخ + نص رز)',850,65,'y'],['صحن شاورما عربي من غير بطاطس',700,45,'y'],
-  ['ساندوتش شاورما فراخ',450,25,'y'],['فحسة + رغيف',800,40,'y'],['طاجن بامية باللحمة + رغيف',750,35,'y'],
-  ['صحن فول + بيضتين',450,28,'g'],['شوربة عدس',200,12,'g'],
-  ['طاجن مسقعة + رغيف',900,18,'r'],['كبسة لحم بالموزة',1300,60,'r'],['بطاطس مقلية (صغير)',320,4,'r']]);
-FOOD['البيت']=ord([
-  ['4 بيضات مسلوقة',300,25,'g'],['200 جم صدر فراخ (إير فراير)',330,62,'g'],['علبة تونة بالماء',120,26,'g'],
-  ['زبادي يوناني 170 جم',150,17,'g'],['لبنة خفيفة (2 معلقة)',70,5,'g'],['نص علبة فول',200,13,'g'],
-  ['50 جم شوفان',190,7,'y'],['رغيف عربي',240,8,'y'],['نص رغيف',120,4,'y'],['خيار وطماطم',40,2,'g'],
-  ['موزة',105,1,'y'],['تمرتين',130,1,'y'],['تفاحة',95,0,'g']]);
-FOOD['مشروبات']=[
-  ['شاي أو قهوة من غير سكر',5,0,'g'],['بيبسي دايت',0,0,'g'],['بيبسي زيرو',0,0,'g',3.5],['سفن آب دايت',0,0,'g',3.5],
-  ['لبن (كوب)',150,8,'y'],['عصير (كوب)',120,1,'r'],['بيبسي عادي (علبة)',150,0,'r',3.5]];
+FOOD['بروتينات']=ord([
+ ['صدر دجاج مشوي (100 جم)',165,31,'g',0,'Chicken breast, grilled (100 g)'],['صدر دجاج مشوي (200 جم)',330,62,'g',0,'Chicken breast, grilled (200 g)'],
+ ['فخذ دجاج من غير جلد (100 جم)',209,26,'g',0,'Chicken thigh, skinless (100 g)'],['لحم بقري قليل الدهن (100 جم)',250,26,'y',0,'Lean beef (100 g)'],
+ ['سلمون (100 جم)',208,22,'g',0,'Salmon (100 g)'],['علبة تونة بالماء',120,26,'g',0,'Tuna can in water'],
+ ['جمبري (100 جم)',99,24,'g',0,'Shrimp (100 g)'],['بيضة كبيرة',70,6,'g',0,'Egg, large'],
+ ['4 بيضات',280,25,'g',0,'4 eggs'],['بياض 3 بيضات',50,11,'g',0,'3 egg whites'],
+ ['جبنة قريش (100 جم)',98,11,'g',0,'Cottage cheese (100 g)'],['زبادي يوناني (170 جم)',150,17,'g',0,'Greek yogurt (170 g)'],
+ ['كفتة (100 جم)',280,17,'y',0,'Kofta (100 g)'],['كبدة (100 جم)',165,24,'y',0,'Liver (100 g)']]);
+FOOD['نشويات وحبوب']=ord([
+ ['رز أبيض مطبوخ (كوب)',205,4,'y',0,'White rice, cooked (1 cup)'],['رز بسمتي مطبوخ (كوب)',210,4,'y',0,'Basmati rice, cooked (1 cup)'],
+ ['مكرونة مطبوخة (كوب)',220,8,'y',0,'Pasta, cooked (1 cup)'],['شوفان (50 جم)',190,7,'y',0,'Oats (50 g)'],
+ ['رغيف خبز عربي',240,8,'y',0,'Arabic bread, 1 loaf'],['نص رغيف',120,4,'y',0,'Half a loaf'],
+ ['توست (شريحة)',80,3,'y',0,'Toast (1 slice)'],['بطاطس مسلوقة (100 جم)',87,2,'g',0,'Boiled potato (100 g)'],
+ ['بطاطا حلوة (100 جم)',86,2,'g',0,'Sweet potato (100 g)'],['كينوا مطبوخة (كوب)',222,8,'g',0,'Quinoa, cooked (1 cup)'],
+ ['كورن فليكس (30 جم)',115,2,'y',0,'Cornflakes (30 g)'],['فول (نص علبة)',200,13,'g',0,'Fava beans (half can)']]);
+FOOD['فاكهة وخضار']=ord([
+ ['خيار وطماطم',40,2,'g',0,'Cucumber and tomato'],['سلطة خضراء',60,2,'g',0,'Green salad'],
+ ['بروكلي (كوب)',55,4,'g',0,'Broccoli (1 cup)'],['جزر (ثمرة)',25,1,'g',0,'Carrot (1)'],
+ ['تفاحة',95,0,'g',0,'Apple'],['برتقالة',62,1,'g',0,'Orange'],
+ ['فراولة (كوب)',50,1,'g',0,'Strawberries (1 cup)'],['موزة',105,1,'y',0,'Banana'],
+ ['عنب (كوب)',104,1,'y',0,'Grapes (1 cup)'],['تمرتين',130,1,'y',0,'2 dates'],
+ ['أفوكادو (نص)',120,1,'y',0,'Avocado (half)'],['رمان (ثمرة)',105,1,'y',0,'Pomegranate']]);
+FOOD['مكسرات ودهون']=ord([
+ ['لوز (30 جم)',172,6,'y',0,'Almonds (30 g)'],['فول سوداني (30 جم)',170,7,'y',0,'Peanuts (30 g)'],
+ ['جوز (30 جم)',185,4,'y',0,'Walnuts (30 g)'],['زبدة فول سوداني (معلقة)',95,4,'y',0,'Peanut butter (1 tbsp)'],
+ ['زيت زيتون (معلقة)',119,0,'y',0,'Olive oil (1 tbsp)'],['تمر محشي مكسرات (1)',80,1,'y',0,'Date stuffed with nuts (1)']]);
+FOOD['أطباق بيتي']=ord([
+ ['شوربة عدس',200,12,'g',0,'Lentil soup'],['حمص (100 جم)',166,8,'g',0,'Hummus (100 g)'],
+ ['ملوخية بالدجاج',350,30,'g',0,'Molokhia with chicken'],['بامية باللحمة',400,25,'y',0,'Okra with beef'],
+ ['محشي (5 ورقات)',320,8,'y',0,'Stuffed vine leaves (5)'],['طعمية (3 قطع)',340,12,'y',0,'Falafel (3 pieces)'],
+ ['كشري (طبق وسط)',650,20,'r',0,'Koshari (medium plate)'],['كبسة دجاج (ربع)',850,45,'r',0,'Chicken kabsa (quarter)'],
+ ['مندي دجاج (ربع)',800,55,'r',0,'Chicken mandi (quarter)'],['مسقعة (طبق)',400,8,'r',0,'Moussaka (plate)']]);
+FOOD['مشروبات']=ord([
+ ['مياه',0,0,'g',0,'Water'],['شاي أو قهوة من غير سكر',5,0,'g',0,'Tea or coffee, no sugar'],
+ ['قهوة باللبن',80,4,'y',0,'Coffee with milk'],['لبن (كوب)',150,8,'y',0,'Milk (1 cup)'],
+ ['بروتين سكوب بالمية',120,24,'g',0,'Protein scoop with water'],['بيبسي دايت أو زيرو',0,0,'g',0,'Diet or zero cola'],
+ ['عصير (كوب)',120,1,'r',0,'Juice (1 cup)'],['بيبسي عادي (علبة)',150,0,'r',0,'Regular cola (can)']]);
+const DEFCAT='بروتينات';
 const MORN=['صباح الفل يا بطل','صباحو يا وحش','صباح الورد يا كبير','صباح الجمال يا غالي','يا صباح الهِمّة يا بطل'];
 const NOON=['إزيك يا بطل؟ عامل إيه النهاردة','أهلاً يا كبير','يا هلا يا غالي','منوّر يا بطل'];
 const EVE=['مساء الفل يا بطل','مسا الخير يا وحش','مساء الجمال يا غالي','منوّر يا كبير، يومك كان عامل إيه؟','مساء الورد يا بطل'];
@@ -768,7 +753,7 @@ function openHow(id){
 $('#sheet').addEventListener('click',ev=>{if(ev.target.id==='sheet'||ev.target.id==='closeSheet')$('#sheet').hidden=true});
 
 /* ---------- FOOD ---------- */
-let cat='الأفضل في جريلو';
+let cat=DEFCAT;
 function addMeal(name,kcal,p){const d=day(todayK);d.meals=d.meals||[];d.meals.push({id:Date.now().toString(36),name,kcal:+kcal||0,p:+p||0,t:new Date().toTimeString().slice(0,5)});putDay(todayK,d);renderAll();toast('تمام، اتضافت: '+name)}
 function isFav(name){return S.favs.some(f=>f.name===name)}
 function renderFood(){
@@ -780,12 +765,16 @@ function renderFood(){
   const lm=lastMealDay();
   $('#repeatWrap').innerHTML=lm?`<button class="btn btn-ghost btn-wide" id="repeatY" style="margin-top:10px">كرّر أكل ${i18less(lm)} (${lm.meals.length} أكلة)</button>`:'';
   const cats=['⭐ المفضلة',...Object.keys(FOOD)];
-  if(!cats.includes(cat))cat='الأفضل في جريلو';
+  if(!cats.includes(cat))cat=DEFCAT;
   $('#catChips').innerHTML=cats.map(c=>`<button class="chip" aria-pressed="${c===cat}" data-cat="${c}">${c}</button>`).join('');
   if(cat==='⭐ المفضلة'){
     $('#presets').innerHTML=S.favs.length?S.favs.map((f,i)=>`<button class="fi" data-fadd="${i}"><span class="nm">${esc(f.name)}</span><span class="kc num">${fmt(f.kcal)} س · ${fmt(f.p)} ب</span><span class="pl" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>`).join('')+S.favs.map((f,i)=>`<p class="note" style="margin:2px 4px 0"><button class="how" data-frm="${i}">شيل «${esc(f.name)}» من المفضلة</button></p>`).join(''):`<div class="card" style="text-align:center"><p class="lbl" style="margin:0">لسه مفيش مفضلات. دوس ★ جنب أي أكلة سجّلتها وهتظهر هنا.</p></div>`;
   }else{
-    $('#presets').innerHTML=FOOD[cat].map((f,i)=>`<button class="fi" data-add="${i}"><span class="nm"><span class="tier t-${f[3]}"></span>${esc(f[0])}${f[4]?` <small class="lbl num">${f[4]} ر</small>`:''}</span><span class="kc num">${fmt(f[1])} س · ${f[2]} ب</span><span class="pl" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>`).join('');
+    const en=window.I18N&&I18N.lang==='en';
+    const q=($('#foodQ')?.value||'').trim().toLowerCase();
+    let items=FOOD[cat];
+    if(q){items=[].concat(...Object.values(FOOD)).filter(f=>f[0].toLowerCase().includes(q)||(f[5]||'').toLowerCase().includes(q))}
+    $('#presets').innerHTML=items.length?items.map(f=>{const i=(FOOD[cat]||[]).indexOf(f);return `<button class="fi" data-add="${i}" data-q="${q?esc(f[0]):''}"><span class="nm"><span class="tier t-${f[3]}"></span>${esc(en&&f[5]?f[5]:f[0])}${f[4]?` <small class="lbl num">${f[4]} ر</small>`:''}</span><span class="kc num">${fmt(f[1])} س · ${f[2]} ب</span><span class="pl" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>`}).join(''):`<div class="card" style="text-align:center"><p class="lbl" style="margin:0">لا نتائج. جرّب اسم تاني أو أضفها يدوي من تحت.</p></div>`;
   }
 }
 function i18less(lm){const y=new Date();y.setDate(y.getDate()-1);return dkey(y)===lm.k?'إمبارح':'يوم '+lm.dow}
@@ -948,20 +937,20 @@ function ignoreProposal(i){const r=S.review;if(!r)return;r.ignored[i]=true;putSe
 let deferredPrompt=null;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
 
-function renderStepsLink(){const box=$('#stepsLink');if(!box)return;const url=window.SUPABASE_URL?window.SUPABASE_URL+'/functions/v1/steps-sync':'';if(!SET.stepsToken){box.innerHTML=`<button class="btn btn-acc btn-wide" id="stepsNew" style="margin-top:8px">أنشئ مفتاح الربط</button>`;return}box.innerHTML=`<div class="srow" style="flex-direction:column;align-items:stretch;gap:6px"><small class="lbl">مفتاح الربط (تحطه في الاختصار مرة واحدة)</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${SET.stepsToken}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyTok">انسخ</button></div><small class="lbl">رابط الإرسال</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${url}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyUrl">انسخ</button></div><small class="lbl">كود الوصول (ثابت، للترويسة Authorization)</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${window.SUPABASE_ANON_KEY||''}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyKey">انسخ</button></div><button class="btn btn-ghost btn-wide" id="stepsNew" style="margin-top:4px">مفتاح جديد (القديم يبطل)</button></div>`}
+function renderStepsLink(){const box=$('#stepsLink');if(!box)return;const url=window.SUPABASE_URL?window.SUPABASE_URL+'/functions/v1/steps-sync':'';if(!SET.stepsToken){box.innerHTML=`<button class="btn btn-acc btn-wide" id="stepsNew" style="margin-top:8px">أنشئ مفتاح الربط</button>`;return}box.innerHTML=`<div class="srow" style="flex-direction:column;align-items:stretch;gap:6px"><small class="lbl">مفتاح الربط (تحطه في الاختصار مرة واحدة)</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${esc(SET.stepsToken)}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyTok">انسخ</button></div><small class="lbl">رابط الإرسال</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${esc(url)}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyUrl">انسخ</button></div><small class="lbl">كود الوصول (ثابت، للترويسة Authorization)</small><div class="row" style="flex-wrap:nowrap"><input class="inp" readonly value="${esc(window.SUPABASE_ANON_KEY||'')}" style="flex:1;direction:ltr;text-align:left;font-size:13px"><button class="btn btn-ghost" id="stepsCopyKey">انسخ</button></div><button class="btn btn-ghost btn-wide" id="stepsNew" style="margin-top:4px">مفتاح جديد (القديم يبطل)</button></div>`}
 window.P2applySteps=rows=>{let ch=false;(rows||[]).forEach(r=>{const k=r.day,st=+r.steps||0;if(!k||!st)return;const d=day(k);if(st>+(d.steps||0)){d.steps=st;putDay(k,d);ch=true}});if(ch)renderAll(true)};
 function cycleTheme(){SET.theme=SET.theme==='dark'?'light':'dark';applySettings();putSettings();toast(SET.theme==='dark'?'الوضع الغامق':'الوضع الفاتح')}
 function openSettings(){
   const s=$('#sheetIn');
   const th=k=>`<button data-theme="${k}" aria-pressed="${SET.theme===k}">${{auto:'تلقائي',light:'فاتح',dark:'غامق'}[k]}</button>`;
   s.innerHTML=`<h2>الأهداف والإعدادات</h2>
-  <div class="srow"><span class="lbl">السعرات اليومية</span><input class="inp num" id="sKcal" type="number" inputmode="numeric" value="${T.kcal}"></div>
-  <div class="srow"><span class="lbl">البروتين اليومي (جم)</span><input class="inp num" id="sProt" type="number" inputmode="numeric" value="${T.prot}"></div>
-  <div class="srow"><span class="lbl">هدف الخطوات</span><input class="inp num" id="sSteps" type="number" inputmode="numeric" value="${T.steps}"></div>
-  <div class="srow"><span class="lbl">أكواب المية</span><input class="inp num" id="sWater" type="number" inputmode="numeric" value="${SET.water}"></div>
-  <div class="srow"><span class="lbl">الوزن المستهدف (كجم)</span><input class="inp num" id="sGoal" type="number" step="0.1" inputmode="decimal" value="${BASE.goal}"></div>
-  <div class="srow"><span class="lbl">وزن البداية (كجم)</span><input class="inp num" id="sStartKg" type="number" step="0.1" inputmode="decimal" value="${BASE.kg}"></div>
-  <div class="srow"><span class="lbl">تاريخ بداية الرحلة</span><input class="inp num" id="sStartDate" type="date" value="${BASE.date}"></div>
+  <div class="srow"><span class="lbl">السعرات اليومية</span><input class="inp num" id="sKcal" type="number" inputmode="numeric" value="${esc(T.kcal)}"></div>
+  <div class="srow"><span class="lbl">البروتين اليومي (جم)</span><input class="inp num" id="sProt" type="number" inputmode="numeric" value="${esc(T.prot)}"></div>
+  <div class="srow"><span class="lbl">هدف الخطوات</span><input class="inp num" id="sSteps" type="number" inputmode="numeric" value="${esc(T.steps)}"></div>
+  <div class="srow"><span class="lbl">أكواب المية</span><input class="inp num" id="sWater" type="number" inputmode="numeric" value="${esc(SET.water)}"></div>
+  <div class="srow"><span class="lbl">الوزن المستهدف (كجم)</span><input class="inp num" id="sGoal" type="number" step="0.1" inputmode="decimal" value="${esc(BASE.goal)}"></div>
+  <div class="srow"><span class="lbl">وزن البداية (كجم)</span><input class="inp num" id="sStartKg" type="number" step="0.1" inputmode="decimal" value="${esc(BASE.kg)}"></div>
+  <div class="srow"><span class="lbl">تاريخ بداية الرحلة</span><input class="inp num" id="sStartDate" type="date" value="${esc(BASE.date)}"></div>
   <button class="btn btn-acc btn-wide" id="setSave" style="margin-top:16px">حفظ الأهداف</button>
   <h3 style="font-size:17px;margin-top:18px">الشكل</h3>
   <div class="seg" style="margin-top:8px">${th('auto')}${th('light')}${th('dark')}</div>
@@ -1030,7 +1019,7 @@ document.addEventListener('click',ev=>{
   if(b.classList.contains('chk')){const id=b.dataset.ex,i=+b.dataset.i;const d=day(todayK);const cur=d.sets?.[id]?.[i]?.d;const nd=setField(id,i,'d',!cur);if(!cur&&!EX[id].cardio)startTimer(EX[id].rest);renderTrain();return}
   if(b.id==='finish'){const d=day(todayK);d.done=true;d.plan=plan;d.finishedAt=new Date().toISOString();putDay(todayK,d);if(SCHED[new Date().getDay()]!==plan){for(let i=1;i<=2;i++){const dd=new Date();dd.setDate(dd.getDate()-i);const dk=dkey(dd);if(SCHED[dd.getDay()]===plan&&!S.days[dk]?.done){const md=day(dk);md.done=true;md.plan=plan;md.madeUp=todayK;putDay(dk,md);break}}}toast('عااش يا بطل! النهاردة اتقفل');renderAll();return}
   if(b.dataset.cat){cat=b.dataset.cat;return renderFood()}
-  if(b.dataset.add!==undefined){const f=FOOD[cat][+b.dataset.add];return addMeal(f[0],f[1],f[2])}
+  if(b.dataset.add!==undefined){let f;if(b.dataset.q){f=[].concat(...Object.values(FOOD)).find(x=>x[0]===b.dataset.q)}else{f=FOOD[cat][+b.dataset.add]}if(f)return addMeal(f[0],f[1],f[2]);return}
   if(b.dataset.rm){const d=day(todayK);d.meals=(d.meals||[]).filter(m=>m.id!==b.dataset.rm);putDay(todayK,d);return renderAll()}
   if(b.dataset&&b.dataset.portion&&photoGuess){portion=+b.dataset.portion;showGuess(photoGuess,null);return}
   if(b.id==='addGuess'&&photoGuess){const p=portion;addMeal(photoGuess.name+(p<1?' ('+PORT.find(x=>x[0]===p)[1]+')':''),Math.round(photoGuess.kcal*p),Math.round(photoGuess.protein*p*10)/10);photoGuess=null;portion=1;$('#mealTxt').value='';$('#photoRes').textContent='';return}
@@ -1059,6 +1048,7 @@ document.addEventListener('click',ev=>{
   if(b.dataset.ign!==undefined)return ignoreProposal(+b.dataset.ign);
   if(b.id==='installBtn'&&deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;$('#sheet').hidden=true;return}
 });
+document.addEventListener('input',ev=>{if(ev.target.id==='foodQ')renderFood()});
 document.addEventListener('change',ev=>{if(ev.target.id==='impFile'&&ev.target.files?.[0]){importJson(ev.target.files[0]);ev.target.value=''}});
 document.addEventListener('input',ev=>{const el=ev.target;if(el.dataset.ex&&el.dataset.f)setField(el.dataset.ex,+el.dataset.i,el.dataset.f,el.value)});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderAll()});
