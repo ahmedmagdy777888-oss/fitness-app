@@ -1240,7 +1240,9 @@ show('home');
   /* greetings: swap the hardcoded name for the profile name */
   function patchGreet(){
     var g=document.getElementById('greet');
-    if(!prof){if(g&&g.textContent!=='أهلاً بيك')g.textContent='أهلاً بيك';return}
+    var en=window.I18N&&I18N.lang==='en';
+    if(!prof){if(g){var d0=en?'Welcome':'أهلاً بيك';if(g.textContent!==d0)g.textContent=d0;}return}
+    if(en){if(g){var w0='Hey '+prof.name;if(g.textContent!==w0)g.textContent=w0;}var av0=document.getElementById('avatarImg');if(av0)av0.alt=prof.name;return}
     if(g){var t=g.textContent;var nt=t.replace(/يا (بطل|وحش|كبير|غالي)/g,'يا '+prof.name);if(nt!==t)g.textContent=nt;}
     var av=document.getElementById('avatarImg');if(av)av.alt=prof.name;
   }
