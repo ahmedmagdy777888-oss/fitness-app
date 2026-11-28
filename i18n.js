@@ -103,13 +103,16 @@ var D={
 'السبت':'Saturday','الأحد':'Sunday','الاثنين':'Monday','الثلاثاء':'Tuesday','الأربعاء':'Wednesday','الخميس':'Thursday','الجمعة':'Friday',
 'يناير':'January','فبراير':'February','مارس':'March','أبريل':'April','مايو':'May','يونيو':'June','يوليو':'July','أغسطس':'August','سبتمبر':'September','أكتوبر':'October','نوفمبر':'November','ديسمبر':'December',
 /* misc */
+'سياسة الخصوصية':'Privacy policy','شروط الاستخدام':'Terms of use','. تحب تعوّضه النهاردة؟':'. Make it up today?',
 'اضغط لتغيير صورتك':'Tap to change your photo','صورتك':'Your photo','اختار صورة':'Choose a photo','تسجيل صوتي':'Voice recording',
 'عنوان قصير':'Short title','كرّر أكل':'Repeat the food of','أكلة':'dishes','الهدف 8 أكواب':'Goal: 8 cups'
 };
 var RULES=[
+[/^تمرين (.+)$/,function(m){return 'Workout: '+(D[m[1]]||m[1]);}],
+[/^يوم (\S+)\. تحب تعوّضه النهاردة؟$/,function(m){return 'on '+(D[m[1]]||m[1])+'. Make it up today?';}],
 [/^يا ([\u0621-\u064A]{2,15})$/,function(m){return 'Hey '+m[1];}],
 [/^النهاردة (.+)$/,function(m){return 'Today is '+(D[m[1]]||m[1]);}],
-[/^(.+) (\d{1,2}) (.+) · يوم (\d+) في الرحلة$/,function(m){return (D[m[1]]||m[1])+', '+m[3]+' '+m[2]+' · Day '+m[4]+' of the journey';}],
+[/^(.+) (\d{1,2}) (.+) · يوم (\d+) في الرحلة$/,function(m){return (D[m[1]]||m[1])+', '+(D[m[3]]||m[3])+' '+m[2]+' · Day '+m[4]+' of the journey';}],
 [/^يوم (\d+) في الرحلة$/,function(m){return 'Day '+m[1]+' of the journey';}],
 [/^من ([\d,]+)$/,function(m){return 'of '+m[1];}],
 [/^من ([\d,]+) جم$/,function(m){return 'of '+m[1]+' g';}],
@@ -133,7 +136,9 @@ function tr(t){
   if(!r)for(var i=0;i<RULES.length;i++){var mm=core.match(RULES[i][0]);if(mm){r=RULES[i][1](mm);break;}}
   if(!r&&core.indexOf(' · ')>-1){
     var parts=core.split(' · '),ch=false;
-    for(var j=0;j<parts.length;j++){var p=tr(parts[j]);if(p!==parts[j]){ch=true;parts[j]=p;}}
+    for(var j=0;j<parts.length;j++){var p=tr(parts[j]);
+      if(p===parts[j]&&/…$/.test(parts[j].trim())){var q=parts[j].replace(/…\s*$/,'');var p2=tr(q);if(p2!==q)p=p2+' …';}
+      if(p!==parts[j]){ch=true;parts[j]=p;}}
     if(ch)r=parts.join(' · ');
   }
   return r?m[1]+r+m[3]:t;
@@ -154,7 +159,7 @@ function fixEl(el){
   if(el.getAttribute&&el.getAttribute('dir')==='rtl'&&!el.closest('.ayah'))el.setAttribute('dir','ltr');
   for(var i=0;i<ATTRS.length;i++){var a=el.getAttribute&&el.getAttribute(ATTRS[i]);if(a&&/[ء-ي]/.test(a)){var na=tr(a);if(na!==a)el.setAttribute(ATTRS[i],na);}}
   walk(el);
-  var els=el.querySelectorAll?el.querySelectorAll('[placeholder],[title],[aria-label],[alt]'):[];
+  var els=el.querySelectorAll?el.querySelectorAll('[placeholder],[title],[aria-label],[alt],[dir]'):[];
   for(var k=0;k<els.length;k++)fixEl(els[k])===undefined;
   for(var k2=0;k2<els.length;k2++){var e=els[k2];
     for(var i2=0;i2<ATTRS.length;i2++){var a2=e.getAttribute(ATTRS[i2]);if(a2&&/[ء-ي]/.test(a2)){var na2=tr(a2);if(na2!==a2)e.setAttribute(ATTRS[i2],na2);}}
