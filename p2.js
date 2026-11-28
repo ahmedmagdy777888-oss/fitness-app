@@ -170,26 +170,8 @@
     if(userId){
       card.innerHTML='<div class="card" style="padding:12px 14px"><div class="spread" style="display:flex;align-items:center;gap:8px">'
         +'<span style="font-size:13.5px">سحابتك شغالة'+(uname?' · <b>'+esc(uname)+'</b>':'')+'</span>'
-        +'<span style="display:flex;gap:6px"><button class="btn btn-ghost" id="p2out" style="padding:6px 10px;font-size:12.5px">خروج</button>'
-        +'<button class="btn btn-ghost" id="p2del" style="padding:6px 10px;font-size:12.5px;color:var(--warn)">مسح حسابي وبياناتي</button></span></div></div>';
+        +'<span style="display:flex;gap:6px"><button class="btn btn-ghost" id="p2out" style="padding:6px 10px;font-size:12.5px">خروج</button></span></div></div>';
       $('p2out').addEventListener('click',function(){sb.auth.signOut().then(function(){location.reload()})});
-      $('p2del').addEventListener('click',function(){
-        var s=$('sheetIn');
-        s.innerHTML='<h2>مسح الحساب والبيانات</h2><p class="note">ده هيمسح حسابك وكل بياناتك من السحابة ومن الجهاز ده نهائياً. مفيش رجوع.</p>'
-          +'<button class="btn btn-acc btn-wide" id="p2delYes" style="margin-top:14px;background:var(--warn);color:#06201D">أيوه، امسح كل حاجة</button>'
-          +'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>';
-        $('sheet').hidden=false;
-        $('p2delYes').addEventListener('click',function(){
-          $('p2delYes').disabled=true;
-          sb.auth.getSession().then(function(r){
-            var tok=r.data.session&&r.data.session.access_token;
-            return fetch(window.SUPABASE_URL+'/functions/v1/delete-user',{method:'POST',headers:{Authorization:'Bearer '+tok}});
-          }).then(function(){
-            localStorage.removeItem(LSK);localStorage.removeItem(PK);localStorage.removeItem('abushuaib_consent_at');localStorage.removeItem('p2_uname');
-            location.reload();
-          }).catch(function(){t1('حصلت مشكلة. حاول تاني');$('p2delYes').disabled=false});
-        });
-      });
     }else{
       card.innerHTML='<div class="card" style="padding:12px 14px"><div class="spread" style="display:flex;align-items:center;gap:8px">'
         +'<span style="font-size:13.5px">احفظ بياناتك في السحابة واشتغل من أي تليفون</span>'
@@ -197,6 +179,42 @@
       $('p2open').addEventListener('click',function(){openAuthSheet('in')});
     }
   }
+
+  function askDelete(){
+    var s=$('sheetIn');
+    s.innerHTML='<h2>مسح الحساب والبيانات</h2><p class="note">ده هيمسح حسابك وكل بياناتك من السحابة ومن الجهاز ده نهائياً. مفيش رجوع.</p>'
+      +'<button class="btn btn-acc btn-wide" id="p2delYes" style="margin-top:14px;background:var(--warn);color:#06201D">أيوه، امسح كل حاجة</button>'
+      +'<button class="btn btn-ghost btn-wide" id="closeSheet" style="margin-top:8px">لأ</button>';
+    $('sheet').hidden=false;
+    $('p2delYes').addEventListener('click',function(){
+      $('p2delYes').disabled=true;
+      sb.auth.getSession().then(function(r){
+        var tok=r.data.session&&r.data.session.access_token;
+        return fetch(window.SUPABASE_URL+'/functions/v1/delete-user',{method:'POST',headers:{Authorization:'Bearer '+tok}});
+      }).then(function(){
+        localStorage.removeItem(LSK);localStorage.removeItem(PK);localStorage.removeItem('abushuaib_consent_at');localStorage.removeItem('p2_uname');
+        location.reload();
+      }).catch(function(){t1('حصلت مشكلة. حاول تاني');$('p2delYes').disabled=false});
+    });
+  }
+
+  /* account section inside the app Settings sheet (kept off the home screen) */
+  window.p2RenderSettings=function(){
+    var w=$('p2setWrap');if(!w)return;
+    if(userId){
+      w.innerHTML='<div class="spread" style="display:flex;align-items:center;gap:8px;margin-top:8px">'
+        +'<span style="font-size:13.5px">سحابتك شغالة'+(uname?' · <b>'+esc(uname)+'</b>':'')+'</span>'
+        +'<span style="display:flex;gap:6px"><button class="btn btn-ghost" id="p2outSet" style="padding:6px 10px;font-size:12.5px">خروج</button>'
+        +'<button class="btn btn-ghost" id="p2delSet" style="padding:6px 10px;font-size:12.5px;color:var(--warn)">مسح حسابي وبياناتي</button></span></div>';
+      $('p2outSet').addEventListener('click',function(){sb.auth.signOut().then(function(){location.reload()})});
+      $('p2delSet').addEventListener('click',askDelete);
+    }else{
+      w.innerHTML='<div class="spread" style="display:flex;align-items:center;gap:8px;margin-top:8px">'
+        +'<span style="font-size:13.5px">سجّل دخولك عشان بياناتك تتزامن بين أجهزتك</span>'
+        +'<button class="btn btn-acc" id="p2openSet" style="padding:8px 12px;font-size:13px;flex:none">حساب / دخول</button></div>';
+      $('p2openSet').addEventListener('click',function(){openAuthSheet('in')});
+    }
+  };
 
   /* auto-push whenever the app saves either key (patch the prototype so real calls are intercepted) */
   try{localStorage.removeItem('setItem')}catch(e){}
