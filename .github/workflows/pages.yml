@@ -18,7 +18,7 @@ jobs:
         run: |
           set -e
           mkdir _site
-          cp index.html manifest.json privacy.html supabase.js p2.js clip-*.js _site/
+          cp index.html manifest.json privacy.html terms.html supabase.js p2.js i18n.js sw.js clip-*.js _site/
           cp -r .well-known _site/
           for n in apple-touch-icon icon-192; do
             base64 -d icons/$n.b64 > _site/$n.png
