@@ -1,0 +1,16 @@
+{
+  "name": "وأعدّوا — Wa Uddu",
+  "short_name": "وأعدّوا",
+  "description": "تطبيق تمرين وأكل ووزن — Workout, food and weight tracker",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#0C1F1C",
+  "theme_color": "#2B8479",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+    {"src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable"}
+  ]
+}
