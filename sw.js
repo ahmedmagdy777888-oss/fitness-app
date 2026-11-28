@@ -1,5 +1,5 @@
 /* Wa Uddu service worker: network-first for pages, cache-first for static assets. */
-const C='wa-v4';
+const C='wa-v7';
 self.addEventListener('install',e=>{self.skipWaiting()});
 self.addEventListener('activate',e=>{
   e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
